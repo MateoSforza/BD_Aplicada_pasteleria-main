@@ -3,5 +3,8 @@ import { getIngredientes } from '../api/ingredientes';
 import { Ingrediente } from '../types/ingredientes';
 
 export function useIngredientes() {
-    return useQuery<Ingrediente[]>(['ingredientes'], getIngredientes);
+    return useQuery<Ingrediente[]>({
+        queryKey: ['ingredientes'],
+        queryFn: getIngredientes,
+    });
 }

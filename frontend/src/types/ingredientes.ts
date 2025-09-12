@@ -1,6 +1,6 @@
 export interface Ingrediente {
-  id: number;
+  idIngrediente: number;
   nombre: string;
-  cantidad: number;
-  unidad: string;
+  unidadCompra: string;
+  precioUnitario: number;
 }
