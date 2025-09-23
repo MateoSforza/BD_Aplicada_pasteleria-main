@@ -39,8 +39,8 @@ const Dashboard: React.FC = () => (
         className="w-14 h-14 rounded-full border-2 border-primary-500"
       />
       <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-        Bienvenido a la{" "}
-        <span className="text-primary-600">Pastelería Camila</span>
+        Bienvenido a{" "}
+        <span className="text-primary-600">CamilasBakery</span>
       </h1>
     </div>
 

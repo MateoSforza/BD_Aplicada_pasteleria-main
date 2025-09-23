@@ -9,8 +9,7 @@ import {
   BarChart3, 
   LogOut, 
   Menu, 
-  X,
-  User
+  X
 } from 'lucide-react';
 
 const DashboardLayout: React.FC = () => {
@@ -46,7 +45,7 @@ const DashboardLayout: React.FC = () => {
         <div className="flex flex-col h-full">
           {/* Logo / Header */}
           <div className="flex items-center justify-between h-16 px-6 bg-primary-600">
-            <h1 className="text-xl font-bold tracking-wide">Pastelería Camila</h1>
+            <h1 className="text-xl font-bold tracking-wide">CamilasBakery</h1>
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden text-white hover:bg-primary-700 p-1 rounded"
@@ -55,22 +54,21 @@ const DashboardLayout: React.FC = () => {
             </button>
           </div>
 
-          {/* Usuario */}
-          {usuario && (
-            <div className="p-6 bg-primary-700 border-b border-primary-600">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">
-                    {(usuario as any).username || (usuario as any).nombreUsuario || 'Usuario'}
-                  </p>
-                  <p className="text-xs text-primary-200">Administrador</p>
-                </div>
+          {/* Usuario / Marca */}
+          <div className="p-6 bg-primary-700 border-b border-primary-600">
+            <div className="flex items-center space-x-3">
+              {/* Logo con iniciales CB */}
+              <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center font-bold text-white text-sm">
+                CB
+              </div>
+              <div>
+                <p className="text-sm font-semibold">
+                  {usuario ? (usuario as any).username || (usuario as any).nombreUsuario : "Administrador"}
+                </p>
+                <p className="text-xs text-primary-200">CamilasBakery</p>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Menú navegación */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
@@ -109,7 +107,7 @@ const DashboardLayout: React.FC = () => {
 
       {/* Contenido */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Topbar (visible en desktop también) */}
+        {/* Topbar */}
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
           <div className="flex items-center justify-between h-16 px-6">
             <button
