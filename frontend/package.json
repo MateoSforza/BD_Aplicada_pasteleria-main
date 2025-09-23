@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+  "dev": "vite",
+  "build": "tsc && vite build",
+  "preview": "vite preview",
+  "backend": "dotnet run --project C:/Users/Mateo/source/repos/CamilasBakery.API.Backend/CamilasBakery.API/CamilasBakery.API.csproj",
+  "dev:full": "concurrently \"npm run backend\" \"npm run dev\""
   },
   "dependencies": {
     "@tanstack/react-query": "^5.87.4",
@@ -19,6 +21,7 @@
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
     "typescript": "^5.9.2",
-    "vite": "^4.5.14"
+    "vite": "^4.5.14",
+    "concurrently": "^8.2.2"
   }
 }

@@ -1,0 +1,92 @@
+# CONFIGURACIÓN PARA EJECUTAR BACKEND Y FRONTEND SIMULTÁNEAMENTE EN VS CODE
+
+## ¿QUÉ HICIMOS?
+Configuramos el proyecto para que con un solo comando puedas ejecutar tanto el backend (ASP.NET) como el frontend (React) al mismo tiempo desde VS Code.
+
+## PASOS PARA CONFIGURARLO:
+
+### 1. INSTALAR DEPENDENCIA
+En la terminal del frontend, ejecutar:
+```
+npm install --save-dev concurrently
+```
+
+### 2. MODIFICAR package.json
+En el archivo `frontend/package.json`, agregar estos scripts en la sección "scripts":
+
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build", 
+    "preview": "vite preview",
+    "backend": "dotnet run --project RUTA_A_TU_BACKEND/NombreDelProyecto.csproj",
+    "dev:full": "concurrently \"npm run backend\" \"npm run dev\""
+  }
+}
+```
+
+### 3. ENCONTRAR LA RUTA CORRECTA DEL BACKEND
+- Ve a la carpeta donde tienes tu proyecto de ASP.NET
+- Busca el archivo que termina en `.csproj` (ejemplo: `CamilasBakery.API.csproj`)
+- Copia la ruta completa a ese archivo
+
+### 4. EJEMPLO REAL DE CONFIGURACIÓN
+En nuestro caso, el script quedó así:
+```json
+"backend": "dotnet run --project C:/Users/Mateo/source/repos/CamilasBakery.API.Backend/CamilasBakery.API/CamilasBakery.API.csproj"
+```
+
+### 5. ACTUALIZAR EL ARCHIVO .env
+El backend puede ejecutarse en puertos diferentes. Después de ejecutar el comando, fijarse en qué puerto se ejecuta y actualizar el archivo `.env`:
+```
+VITE_API_URL=https://localhost:PUERTO_DEL_BACKEND
+```
+
+## CÓMO USAR:
+
+### COMANDO PARA EJECUTAR TODO:
+```
+npm run dev:full
+```
+
+### LO QUE VA A PASAR:
+1. Se va a compilar y ejecutar el backend de ASP.NET
+2. Se va a ejecutar el frontend de React
+3. Van a aparecer dos URLs:
+   - Frontend: http://localhost:3000/
+   - Backend/Swagger: https://localhost:PUERTO/swagger/index.html
+
+### COMANDOS INDIVIDUALES (si necesitas):
+```
+npm run backend    # Solo el backend
+npm run dev        # Solo el frontend
+```
+
+## ESTRUCTURA DE ARCHIVOS:
+```
+proyecto/
+├── frontend/
+│   ├── package.json (donde agregaste los scripts)
+│   ├── .env (donde está la URL del backend)
+│   └── src/...
+└── backend/ (en otra carpeta, puede estar en cualquier lado)
+    └── TuProyecto.csproj
+```
+
+## NOTAS IMPORTANTES:
+- Asegúrate de que tengas .NET instalado
+- La ruta del backend debe apuntar al archivo .csproj específico
+- Si cambias de computadora, vas a tener que actualizar la ruta en package.json
+- El puerto del backend puede cambiar, siempre verificar en el .env
+
+## BENEFICIOS:
+- Un solo comando para todo
+- No necesitas abrir Visual Studio por separado
+- Todo se ejecuta desde VS Code
+- Fácil para desarrollar y probar
+
+## TROUBLESHOOTING:
+- Si no encuentra el proyecto: verificar la ruta en package.json
+- Si no se conecta: verificar el puerto en .env
+- Si hay errores de compilación: verificar que el backend compile correctamente por separado
