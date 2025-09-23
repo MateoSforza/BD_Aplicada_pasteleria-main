@@ -30,103 +30,104 @@ const DashboardLayout: React.FC = () => {
   const isActive = (href: string) => location.pathname === href;
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Mobile sidebar overlay */}
+    <div className="flex h-screen bg-gray-50 text-gray-900 font-sans">
+      {/* Overlay en móvil */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 lg:hidden"
+          className="fixed inset-0 z-40 bg-black bg-opacity-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
-        >
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
-        </div>
+        />
       )}
 
       {/* Sidebar */}
-      <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-primary-800 text-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between h-16 px-6 bg-primary-500">
-            <h1 className="text-xl font-bold text-white">Pastelería Camila</h1>
+          {/* Logo / Header */}
+          <div className="flex items-center justify-between h-16 px-6 bg-primary-600">
+            <h1 className="text-xl font-bold tracking-wide">Pastelería Camila</h1>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden text-white hover:bg-primary-600 p-1 rounded"
+              className="lg:hidden text-white hover:bg-primary-700 p-1 rounded"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
-          {/* User info */}
+          {/* Usuario */}
           {usuario && (
-            <div className="p-6 bg-gray-50 border-b">
+            <div className="p-6 bg-primary-700 border-b border-primary-600">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-primary-600" />
+                <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
+                  <User className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-semibold">
                     {(usuario as any).username || (usuario as any).nombreUsuario || 'Usuario'}
                   </p>
-                  <p className="text-xs text-gray-500">Administrador</p>
+                  <p className="text-xs text-primary-200">Administrador</p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          {/* Menú navegación */}
+          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
             {navigation.map((item) => {
               const IconComponent = item.icon;
               return (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`sidebar-item ${isActive(item.href) ? 'active' : ''}`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200
+                    ${isActive(item.href)
+                      ? 'bg-primary-600 text-white shadow-md'
+                      : 'text-primary-100 hover:bg-primary-700 hover:text-white'}
+                  `}
                   onClick={() => setSidebarOpen(false)}
                 >
                   <IconComponent className="w-5 h-5" />
-                  <span className="font-medium">{item.name}</span>
+                  <span>{item.name}</span>
                 </Link>
               );
             })}
           </nav>
 
-          {/* Logout button */}
-          <div className="p-4 border-t">
+          {/* Logout */}
+          <div className="p-4 border-t border-primary-600">
             <button
               onClick={logout}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 font-medium"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-semibold transition-colors duration-200"
             >
               <LogOut className="w-5 h-5" />
               Cerrar Sesión
             </button>
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* Main content */}
+      {/* Contenido */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top bar */}
-        <header className="bg-white shadow-sm border-b border-gray-200 lg:hidden">
-          <div className="flex items-center justify-between h-16 px-4">
+        {/* Topbar (visible en desktop también) */}
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+          <div className="flex items-center justify-between h-16 px-6">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-primary-600 hover:text-primary-700 lg:hidden"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <h1 className="text-lg font-semibold text-gray-900">
-              Pastelería Camila
-            </h1>
-            <div className="w-6"></div> {/* Spacer */}
+            <h2 className="text-lg font-bold text-gray-800 tracking-wide">
+              Panel de Control
+            </h2>
+            <div className="w-6"></div>
           </div>
         </header>
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="p-6">
+          <div className="p-6 space-y-6">
             <Outlet />
           </div>
         </main>
