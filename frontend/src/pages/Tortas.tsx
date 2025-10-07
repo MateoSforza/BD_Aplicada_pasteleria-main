@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTortas } from "../hooks/useTortas";
 import { useMedidaDetalle } from "../hooks/useMedidaDetalle";
 import { TortaIngrediente, MedidaCostoExtra } from "../types/medidas";
+import { ShinyText } from "@/components/reactbits/shiny-text";
+
+
 
 // Mapeo global de medidas simuladas
 const medidasGlobal: Record<string, { nombre: string; diametro: number; peso: number }> = {
@@ -29,9 +32,15 @@ const Tortas: React.FC = () => {
 
     return (
     <div className="max-w-6xl mx-auto py-10 px-6 font-sans">
-        <h1 className="text-3xl font-bold text-primary-700 mb-10 text-center">
-        Catálogo de Tortas 🍰
-        </h1>
+        <div className="flex justify-center mb-10">
+        <ShinyText
+            text="Catálogo de Tortas"
+            speed={3}
+            className="text-4xl font-extrabold text-center"
+        />
+        </div>
+
+
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {data.map((torta) => (
