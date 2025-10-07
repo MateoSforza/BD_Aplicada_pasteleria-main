@@ -1,29 +1,29 @@
 import React from "react"
 import { motion } from "framer-motion"
-import { Cake, ChefHat, DollarSign, BarChart3 } from "lucide-react"
+import { Cake, ChefHat, DollarSign, BarChart3, Handshake, ChefHatIcon } from "lucide-react"
 
 const metrics = [
   {
-    label: "Tortas vendidas",
-    value: "120",
+    label: "Productos en el catalogo",
+    value: "19",
     icon: Cake,
     color: "text-primary-500",
   },
   {
     label: "Ingredientes en stock",
-    value: "35",
+    value: "31",
     icon: ChefHat,
     color: "text-secondary-900",
   },
   {
-    label: "Costos extra",
-    value: "$2,500",
-    icon: DollarSign,
+    label: "Ventas concretadas",
+    value: "300",
+    icon: Handshake,
     color: "text-amber-600",
   },
   {
     label: "Ganancia mensual",
-    value: "$8,200",
+    value: "$450,000",
     icon: BarChart3,
     color: "text-primary-500",
   },
@@ -34,9 +34,9 @@ const Dashboard: React.FC = () => (
     {/* Header */}
     <div className="mb-10 flex items-center gap-4">
       <img
-        src="/assets/logo.png"
+        src="/assets/tortas/logo.png"
         alt="Logo"
-        className="w-14 h-14 rounded-full border-2 border-primary-500"
+        className="w-40 h-40 rounded-full border-2 border-primary-500"
       />
       <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
         Bienvenido a{" "}

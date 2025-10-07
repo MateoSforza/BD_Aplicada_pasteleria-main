@@ -1,90 +1,203 @@
-import React, { useState } from 'react';
-import { useTortas } from '../hooks/useTortas';
-import { useMedidaDetalle } from '../hooks/useMedidaDetalle';
-import { TortaIngrediente, MedidaCostoExtra } from '../types/medidas';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTortas } from "../hooks/useTortas";
+import { useMedidaDetalle } from "../hooks/useMedidaDetalle";
+import { TortaIngrediente, MedidaCostoExtra } from "../types/medidas";
+
+// Mapeo global de medidas simuladas
+const medidasGlobal: Record<string, { nombre: string; diametro: number; peso: number }> = {
+    "22 cm": { nombre: "Pequeña", diametro: 22, peso: 1.2 },
+    "24 cm": { nombre: "Mediana", diametro: 24, peso: 1.6 },
+    "26 cm": { nombre: "Grande", diametro: 26, peso: 2.1 },
+};
+
+// Alturas simuladas según la torta
+const alturasPorTorta: Record<number, number> = {
+    12: 5, 13: 6, 14: 7, 15: 8, 16: 7, 17: 5,
+    18: 5, 19: 6, 20: 6, 21: 7, 22: 7,
+};
 
 const Tortas: React.FC = () => {
     const { data, isLoading, error } = useTortas();
-    const [selectedMedidaId, setSelectedMedidaId] = useState<number | null>(null);
+    const [tortaSeleccionada, setTortaSeleccionada] = useState<number | null>(null);
+    const [medidaSeleccionada, setMedidaSeleccionada] = useState<number | null>(null);
+    const { data: medidaDetalle, isLoading: loadingDetalle } = useMedidaDetalle(medidaSeleccionada ?? 0);
 
-    const medidas = (Array.isArray(data) ? data : []).flatMap(t => t.medidas.map(m => ({ ...m, tortaNombre: t.nombre })));
-    const { data: medidaDetalle, isLoading: loadingDetalle } = useMedidaDetalle(selectedMedidaId ?? 0);
-
-    if (isLoading) return <div>Cargando tortas...</div>;
-    if (error) return <div>Error al cargar las tortas: {error.message}</div>;
-    if (!data || !Array.isArray(data) || data.length === 0) return <div>No hay tortas disponibles</div>;
+    if (isLoading) return <div className="text-center py-10 text-gray-600">Cargando tortas...</div>;
+    if (error) return <div className="text-center text-red-600">Error al cargar las tortas: {error.message}</div>;
+    if (!data?.length) return <div className="text-center text-gray-500">No hay tortas disponibles</div>;
 
     return (
-        <div style={{ maxWidth: 900, margin: '2rem auto', fontFamily: 'sans-serif' }}>
-            <h1 style={{ color: '#2c3e50', marginBottom: '2rem' }}>Tortas</h1>
-            
-            <table style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}>
-                <thead>
-                    <tr style={{ backgroundColor: '#34495e', color: 'white' }}>
-                        <th style={{ padding: '1rem', textAlign: 'left' }}>ID</th>
-                        <th style={{ padding: '1rem', textAlign: 'left' }}>Nombre</th>
-                        <th style={{ padding: '1rem', textAlign: 'left' }}>Cantidad de Medidas</th>
-                        <th style={{ padding: '1rem', textAlign: 'left' }}>Precio Promedio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((torta) => (
-                        <tr key={torta.idTorta} style={{
-                            borderBottom: '1px solid #ecf0f1'
-                        }}>
-                            <td style={{ padding: '1rem' }}>{torta.idTorta}</td>
-                            <td style={{ padding: '1rem' }}>{torta.nombre}</td>
-                            <td style={{ padding: '1rem' }}>{torta.cantidadMedidas || 0}</td>
-                            <td style={{ padding: '1rem' }}>
-                                ${(torta.precioPromedio || 0).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+    <div className="max-w-6xl mx-auto py-10 px-6 font-sans">
+        <h1 className="text-3xl font-bold text-primary-700 mb-10 text-center">
+        Catálogo de Tortas 🍰
+        </h1>
 
-            {selectedMedidaId && (
-                <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#0008', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-                    <div style={{ background: '#fff', borderRadius: 12, padding: 32, minWidth: 320, maxWidth: 500, boxShadow: '0 2px 16px #0004', position: 'relative' }}>
-                        <button onClick={() => setSelectedMedidaId(null)} style={{ position: 'absolute', top: 8, right: 8, background: 'transparent', border: 'none', fontSize: 22, cursor: 'pointer', color: '#b45f06' }}>×</button>
-                        {loadingDetalle ? (
-                            <div>Cargando detalle...</div>
-                        ) : medidaDetalle ? (
-                            <div>
-                                <h2 style={{ color: '#00704a' }}>Detalle de medida</h2>
-                                <div><b>Tamaño:</b> {medidaDetalle.tamano}</div>
-                                <div><b>Precio venta:</b> {medidaDetalle.precioVenta.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2 })}</div>
-                                <div><b>Ganancia:</b> {medidaDetalle.ganancia.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2 })}</div>
-                                <div><b>Costo total:</b> {medidaDetalle.costoTotal.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2 })}</div>
-                                                <div><b>Ingredientes:</b>
-                                                    <ul>
-                                                        {(medidaDetalle.ingredientes as TortaIngrediente[] | undefined)?.map((ing, idx) => (
-                                                            <li key={ing.idTortaIngrediente ?? idx}>{ing.nombreIngrediente} - {ing.cantidadUsada} {ing.unidadUsada} - {ing.costoTotal.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2 })}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                                <div><b>Costos extra:</b>
-                                                    <ul>
-                                                        {(medidaDetalle.costosExtra as MedidaCostoExtra[] | undefined)?.map((c, idx) => (
-                                                            <li key={c.idMedidaCostoExtra ?? idx}>{c.nombreCostoExtra} - {c.cantidad} x {c.precioUnitario.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2 })} = {c.costoTotal.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2 })}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                            </div>
-                        ) : (
-                            <div>No se encontró el detalle.</div>
-                        )}
-                    </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {data.map((torta) => (
+            <motion.div
+            key={torta.idTorta}
+            layout
+            onClick={() => {
+                setTortaSeleccionada(tortaSeleccionada === torta.idTorta ? null : torta.idTorta);
+                setMedidaSeleccionada(null);
+            }}
+            className={`rounded-2xl border-2 border-primary-300 overflow-hidden cursor-pointer bg-white transition-transform hover:-translate-y-1 ${
+                tortaSeleccionada === torta.idTorta ? "ring-2 ring-primary-500" : ""
+            }`}
+            >
+            {/* Imagen con overlay */}
+            <div className="relative w-full h-48">
+                <img
+                src={`/assets/tortas/${torta.nombre.toLowerCase().replace(/\s/g, "")}.jpg`}
+                alt={torta.nombre}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/assets/default-cake.jpg";
+                }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent flex flex-col justify-end p-4">
+                <h2 className="text-xl font-semibold text-white drop-shadow-md">
+                    {torta.nombre}
+                </h2>
+                <p className="text-sm text-gray-200">
+                    {torta.cantidadMedidas || 0} tamaños disponibles
+                </p>
                 </div>
+            </div>
+
+            {/* Info (solo visible cuando la torta está abierta) */}
+            {tortaSeleccionada === torta.idTorta && (
+                <AnimatePresence mode="wait">
+                <motion.div
+                    key={torta.idTorta}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="p-5 text-center bg-white shadow-inner rounded-b-2xl border-t border-primary-200"
+                >
+                    <motion.div
+                    className="mt-2 space-y-3"
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                        hidden: {},
+                        visible: {
+                        transition: { staggerChildren: 0.07 },
+                        },
+                    }}
+                    >
+                    {torta.medidas.map((m) => {
+                        const keyTamano = m.tamano.trim();
+                        const medidaInfo = medidasGlobal[keyTamano];
+                        const altura = alturasPorTorta[torta.idTorta] ?? 7;
+
+                        return (
+                        <motion.div
+                            key={m.idMedida}
+                            variants={{
+                            hidden: { opacity: 0, y: 10 },
+                            visible: { opacity: 1, y: 0 },
+                            }}
+                            onClick={(e) => {
+                            e.stopPropagation();
+                            setMedidaSeleccionada(
+                                medidaSeleccionada === m.idMedida ? null : m.idMedida
+                            );
+                            }}
+                            className={`bg-primary-100 hover:bg-primary-200 text-primary-800 font-medium px-4 py-3 h-12 rounded-lg flex items-center justify-center text-base transition-all cursor-pointer shadow-sm ${
+                            medidaSeleccionada === m.idMedida
+                                ? "ring-2 ring-primary-500 scale-[1.02]"
+                                : ""
+                            }`}
+                        >
+                            {medidaInfo ? `${medidaInfo.nombre}` : keyTamano}
+
+                            {/* Nivel 3: Detalle */}
+                            <AnimatePresence>
+                            {medidaSeleccionada === m.idMedida && (
+                                <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.25 }}
+                                className="mt-3 bg-primary-50 text-gray-700 p-4 rounded-md text-sm border border-primary-100 shadow-md"
+                                >
+                                {loadingDetalle ? (
+                                    <div>Cargando detalle...</div>
+                                ) : (
+                                    <div className="space-y-4">
+                                    {/* Info física */}
+                                    <div className="grid grid-cols-3 gap-4 text-center">
+                                        <div>
+                                        <p className="text-xs uppercase font-bold text-primary-700 tracking-wide">
+                                            Altura
+                                        </p>
+                                        <p className="text-sm font-medium mt-1">
+                                            {altura} cm
+                                        </p>
+                                        </div>
+                                        <div>
+                                        <p className="text-xs uppercase font-bold text-primary-700 tracking-wide">
+                                            Diámetro
+                                        </p>
+                                        <p className="text-sm font-medium mt-1">
+                                            {medidaInfo?.diametro ?? "—"} cm
+                                        </p>
+                                        </div>
+                                        <div>
+                                        <p className="text-xs uppercase font-bold text-primary-700 tracking-wide">
+                                            Peso
+                                        </p>
+                                        <p className="text-sm font-medium mt-1">
+                                            {medidaInfo?.peso ?? "—"} kg
+                                        </p>
+                                        </div>
+                                    </div>
+
+                                    <hr className="border-primary-200 my-2" />
+
+                                    {/* Costos */}
+                                    <div className="text-left space-y-1 text-sm">
+                                        <p>
+                                        <b>Precio venta:</b>{" "}
+                                        {m.precioVenta.toLocaleString("es-AR", {
+                                            style: "currency",
+                                            currency: "ARS",
+                                        })}
+                                        </p>
+                                        <p>
+                                        <b>Ganancia:</b>{" "}
+                                        {m.ganancia.toLocaleString("es-AR", {
+                                            style: "currency",
+                                            currency: "ARS",
+                                        })}
+                                        </p>
+                                        <p>
+                                        <b>Costo total:</b>{" "}
+                                        {m.costoTotal.toLocaleString("es-AR", {
+                                            style: "currency",
+                                            currency: "ARS",
+                                        })}
+                                        </p>
+                                    </div>
+                                    </div>
+                                )}
+                                </motion.div>
+                            )}
+                            </AnimatePresence>
+                        </motion.div>
+                        );
+                    })}
+                    </motion.div>
+                </motion.div>
+                </AnimatePresence>
             )}
+            </motion.div>
+        ))}
         </div>
+    </div>
     );
 };
 

@@ -10,7 +10,6 @@ const Ingredientes: React.FC = () => {
 
     return (
         <div style={{ maxWidth: 800, margin: '2rem auto', fontFamily: 'sans-serif' }}>
-            <h1 style={{ textAlign: 'center', color: '#b45f06' }}>Ingredientes</h1>
             <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', boxShadow: '0 2px 8px #0001' }}>
                 <thead>
                     <tr style={{ background: '#f4e2d8' }}>
