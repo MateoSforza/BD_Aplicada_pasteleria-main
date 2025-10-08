@@ -1,48 +1,119 @@
 Estructura del proyecto Panel de Control Pastelería
 ===================================================
 
-Este proyecto está dividido en dos grandes partes: backend y frontend, cada una con su propia estructura y tecnologías, para mantener el código organizado, escalable y fácil de mantener.
+Este proyecto está dividido en backend (ASP.NET) y frontend (React + TypeScript + Tailwind), cada uno con su propia estructura y tecnologías, para mantener el código organizado, escalable y fácil de mantener.
 
-1. backend/
-------------
-- package.json: Define las dependencias y scripts del backend (Node.js + Express + TypeScript).
-- tsconfig.json: Configuración de TypeScript para compilar el código fuente a JavaScript.
-- src/index.ts: Punto de entrada del servidor Express. Aquí se inicializa la API que se conectará a la base de datos SQL Server.
+1. BACKEND (ASP.NET Web API)
+-----------------------------
+- Ubicación: Proyecto separado en ASP.NET Core
+- URL: https://localhost:5001
+- Endpoints disponibles: /api/LogIn, /api/Tortas, /api/Medidas, /api/Ingredientes, /api/CostosExtra
+- Base de datos: SQL Server con Entity Framework
 
-Motivo de la estructura:
-- Separar el backend permite gestionar la lógica de negocio, la conexión a la base de datos y la API REST de forma independiente al frontend.
-- El uso de TypeScript (.ts) en el backend ayuda a evitar errores y mejora el autocompletado y la documentación del código.
+2. FRONTEND (React + TypeScript + Tailwind)
+--------------------------------------------
+ESTRUCTURA PRINCIPAL:
+- package.json: Dependencias y scripts (React, TypeScript, Vite, Tailwind, Lucide Icons)
+- tsconfig.json: Configuración TypeScript para tipado fuerte
+- vite.config.ts: Configuración del bundler Vite (dev server, build, proxy API)
+- tailwind.config.js: Configuración de estilos con Tailwind CSS v4
+- index.html: Punto de montaje de la aplicación React
 
-2. frontend/
--------------
-- package.json: Define las dependencias y scripts del frontend (React + TypeScript + Vite).
-- tsconfig.json: Configuración de TypeScript para el frontend.
-- vite.config.ts: Configuración de Vite, el bundler moderno para React.
-- index.html: Archivo HTML principal donde se monta la aplicación React.
-- src/main.tsx: Punto de entrada de React. Aquí se monta el componente principal en el DOM.
-- src/App.tsx: Componente principal de la aplicación React.
+CARPETAS PRINCIPALES:
 
-Motivo de la estructura:
-- Separar el frontend permite desarrollar la interfaz de usuario de forma desacoplada del backend.
-- El uso de TypeScript (.tsx) en React permite escribir componentes con tipado fuerte y JSX (sintaxis de componentes).
-- El archivo index.html es necesario para que Vite y React tengan un punto de montaje en el navegador.
+📁 src/
+├── 📁 api/ - Comunicación con backend
+│   ├── auth.ts - Login/logout, manejo de sesiones
+│   ├── tortas.ts - CRUD de tortas
+│   ├── medidas.ts - CRUD de medidas
+│   ├── ingredientes.ts - CRUD de ingredientes
+│   ├── costoExtra.ts - CRUD de costos extra
+│   └── http.ts - Configuración base de axios
+│
+├── 📁 app/ - Configuración principal
+│   ├── App.tsx - Componente raíz con routing
+│   ├── DashboardLayout.tsx - Layout principal con sidebar
+│   └── routes.tsx - Configuración de rutas
+│
+├── 📁 components/ - Componentes reutilizables
+│   ├── ProtectedRoute.tsx - Protección de rutas privadas
+│   └── charts/ - Componentes de gráficos
+│
+├── 📁 hooks/ - React hooks personalizados
+│   ├── useAuth.ts - Hook de autenticación
+│   ├── useTortas.ts - Hook para datos de tortas
+│   ├── useMedidas.ts - Hook para datos de medidas
+│   └── useIngredientes.ts - Hook para datos de ingredientes
+│
+├── 📁 pages/ - Páginas principales
+│   ├── Login.tsx - Página de inicio de sesión
+│   ├── Dashboard.tsx - Dashboard principal con métricas
+│   ├── Tortas.tsx - Gestión de tortas
+│   ├── Medidas.tsx - Gestión de medidas (drill-down)
+│   ├── Ingredientes.tsx - Gestión de ingredientes
+│   ├── CostoExtra.tsx - Gestión de costos extra
+│   └── Reportes.tsx - Reportes y estadísticas
+│
+└── 📁 types/ - Definiciones TypeScript
+    ├── auth.ts - Tipos de autenticación
+    ├── tortas.ts - Tipos de tortas
+    ├── medidas.ts - Tipos de medidas
+    └── ingredientes.ts - Tipos de ingredientes
 
-Sobre las extensiones de archivo:
-- .ts: Archivos TypeScript estándar, usados para lógica sin JSX (backend y utilidades frontend).
-- .tsx: Archivos TypeScript que usan JSX, necesarios para componentes React.
-- .html: Archivo de estructura base para la web, donde se monta la app React.
+📁 public/assets/ - Recursos estáticos
+└── tortas/ - Imágenes de tortas (alfacookie.jpg, brownie.jpg, etc.)
 
-Nombres:
-- Los nombres siguen convenciones estándar para que cualquier desarrollador pueda entender rápidamente la función de cada archivo.
-- "App" es el nombre típico para el componente raíz en React.
-- "index" se usa para los puntos de entrada tanto en backend como en frontend.
+TECNOLOGÍAS IMPLEMENTADAS:
+- React 18 con TypeScript para tipado fuerte
+- Tailwind CSS v4 para estilos modernos y responsive
+- Lucide React para iconos profesionales
+- React Router para navegación
+- Axios para peticiones HTTP
+- Vite para desarrollo rápido y build optimizado
 
-Esta organización facilita el trabajo en equipo, la escalabilidad y el mantenimiento del proyecto a largo plazo.
+CARACTERÍSTICAS DEL DASHBOARD:
+- Sistema de autenticación completo (login/logout)
+- Layout responsive con sidebar y navegación
+- Colores personalizados (naranja, marrón, negro)
+- Cards de métricas con animaciones hover
+- Navegación drill-down: Tortas → Medidas → Detalles
 
 
-3. REGLAS
-Log in
-dashboard inicial
-dashboard drill up/down de tortas,medidas y ingredientes tal cual como en la app maui
-apartado de estadisticas, (que ingrediente se utiliza mas, busqueda de ingredientes, tortas, etc) 
-3 PERIODOS, POR EJEMPLO ALTA BAJA MEDIA  rojo amarillo verde
+3. FUNCIONALIDADES IMPLEMENTADAS
+================================
+
+✅ COMPLETADO:
+- Sistema de autenticación (login/logout) con localStorage
+- Dashboard principal con métricas y cards animadas
+- Layout responsive con sidebar navegacional
+- Integración frontend-backend vía API REST
+- Tipado fuerte con TypeScript en toda la aplicación
+- Estilos profesionales con Tailwind CSS v4
+- Estructura modular y escalable del código
+
+🔄 EN DESARROLLO:
+- Páginas de gestión (Tortas, Medidas, Ingredientes, Costos Extra)
+- Navegación drill-down: Tortas → Medidas → Detalles
+- Integración con endpoints del backend
+- Sistema de hooks para manejo de estado
+
+📋 PENDIENTE:
+- Apartado de estadísticas y reportes
+- Indicadores visuales (semaforización): Alta/Media/Baja - Verde/Amarillo/Rojo
+- Búsqueda de ingredientes y tortas
+- Análisis de ingredientes más utilizados
+- Gráficos y visualizaciones de datos
+
+4. SCRIPTS DISPONIBLES
+======================
+- `npm run dev` - Ejecuta solo el frontend en modo desarrollo
+- `npm run dev:full` - Ejecuta backend + frontend simultáneamente  
+- `npm run build` - Construye la aplicación para producción
+- `npm run preview` - Previsualiza la build de producción
+
+5. CONFIGURACIÓN DE DESARROLLO
+==============================
+- Frontend: http://localhost:3000 (Vite)
+- Backend: https://localhost:5001 (ASP.NET)
+- Credenciales test: admin/1234
+- Base de datos: SQL Server con Entity Framework
