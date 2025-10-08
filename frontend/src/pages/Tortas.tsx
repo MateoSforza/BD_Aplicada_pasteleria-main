@@ -62,7 +62,7 @@ const Tortas: React.FC = () => {
     <div className="max-w-6xl mx-auto py-10 px-6 font-sans">
         <div className="flex justify-center mb-10">
             <ShinyText
-                text="Catálogo de Tortas 🍰"
+                text="Catálogo de Tortas"
                 speed={3}
                 className="text-4xl font-bold text-center text-primary-700"
             />
