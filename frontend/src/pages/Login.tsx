@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "../hooks/useAuth"
-import { Cake } from "lucide-react"
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("")
@@ -15,11 +14,10 @@ const Login: React.FC = () => {
     e.preventDefault()
     const success = await login({ username, password })
     if (success) {
-      // Activa animación de salida
       setIsExiting(true)
       setTimeout(() => {
         navigate("/dashboard")
-      }, 600) // mismo tiempo que la animación
+      }, 600)
     }
   }
 
@@ -37,15 +35,16 @@ const Login: React.FC = () => {
           >
             {/* Logo + título */}
             <div className="flex flex-col items-center mb-8">
-              <div className="w-16 h-16 flex items-center justify-center bg-primary-500 rounded-full shadow-md mb-4">
-                <Cake className="w-8 h-8 text-white" />
+              <div className="w-20 h-20 mb-4 rounded-full overflow-hidden shadow-lg border-2 border-primary-500 flex items-center justify-center bg-white">
+                <img
+                  src="/assets/tortas/logo.png"
+                  alt="Logo CamilasBakery"
+                  className="object-contain w-full h-full"
+                />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900 text-center">
                 Camilas<span className="text-primary-600">Bakery</span>
               </h1>
-              <p className="text-gray-500 text-sm mt-2">
-                Panel administrativo
-              </p>
             </div>
 
             {/* Formulario */}
