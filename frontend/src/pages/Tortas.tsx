@@ -3,30 +3,32 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTortas } from "../hooks/useTortas";
 import { useMedidaDetalle } from "../hooks/useMedidaDetalle";
 import { TortaIngrediente, MedidaCostoExtra } from "../types/medidas";
+import { ShinyText } from "@/components/reactbits/shiny-text";
+
 
 // Mapeo global de medidas simuladas
 const medidasGlobal: Record<
-  string,
-  { nombre: string; diametro: number; peso: number }
+    string,
+    { nombre: string; diametro: number; peso: number }
 > = {
-  "22 cm": { nombre: "Pequeña", diametro: 22, peso: 1.2 },
-  "24 cm": { nombre: "Mediana", diametro: 24, peso: 1.6 },
-  "26 cm": { nombre: "Grande", diametro: 26, peso: 2.1 },
+    "22 cm": { nombre: "Pequeña", diametro: 22, peso: 1.2 },
+    "24 cm": { nombre: "Mediana", diametro: 24, peso: 1.6 },
+    "26 cm": { nombre: "Grande", diametro: 26, peso: 2.1 },
 };
 
 // Alturas simuladas según torta
 const alturasPorTorta: Record<number, number> = {
-  12: 5,
-  13: 6,
-  14: 7,
-  15: 8,
-  16: 7,
-  17: 5,
-  18: 5,
-  19: 6,
-  20: 6,
-  21: 7,
-  22: 7,
+    12: 5,
+    13: 6,
+    14: 7,
+    15: 8,
+    16: 7,
+    17: 5,
+    18: 5,
+    19: 6,
+    20: 6,
+    21: 7,
+    22: 7,
 };
 
 const Tortas: React.FC = () => {
@@ -58,9 +60,14 @@ const Tortas: React.FC = () => {
 
     return (
     <div className="max-w-6xl mx-auto py-10 px-6 font-sans">
-        <h1 className="text-3xl font-bold text-primary-700 mb-10 text-center">
-        Catálogo de Tortas 🍰
-        </h1>
+        <div className="flex justify-center mb-10">
+            <ShinyText
+                text="Catálogo de Tortas 🍰"
+                speed={3}
+                className="text-4xl font-bold text-center text-primary-700"
+            />
+            </div>
+
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {data.map((torta) => (

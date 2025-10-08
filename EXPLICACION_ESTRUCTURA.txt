@@ -10,6 +10,8 @@ Este proyecto está dividido en backend (ASP.NET) y frontend (React + TypeScript
 - Endpoints disponibles: /api/LogIn, /api/Tortas, /api/Medidas, /api/Ingredientes, /api/CostosExtra
 - Base de datos: SQL Server con Entity Framework
 
+CamilasBakery es un sistema web interno para la gestión administrativa, de producción y control de costos de una pastelería, desarrollado en .NET y React.
+
 2. FRONTEND (React + TypeScript + Tailwind)
 --------------------------------------------
 ESTRUCTURA PRINCIPAL:
