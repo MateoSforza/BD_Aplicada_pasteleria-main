@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Menu } from 'lucide-react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/general/Sidebar';
 
 const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

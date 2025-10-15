@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChefHat, Package, Search, Plus, ArrowUpLeft, DollarSignIcon } from 'lucide-react';
 import { useIngredientes, useCreateIngrediente } from '../hooks/useIngredientes';
-import StatsCard from '@/components/StatsCard';
-import PopupForm from '@/components/PopUpCreate';
+import StatsCard from '@/components/general/StatsCard';
+import PopupForm from '@/components/general/PopUpCreate';
 
 const Ingredientes: React.FC = () => {
   // Hooks para obtener y crear ingredientes

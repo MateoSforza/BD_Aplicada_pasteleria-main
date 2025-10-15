@@ -57,6 +57,7 @@ export interface Extra {
     nombreCliente: string;
     fecha: string;
     total: number;
+    metodoDePago: string,
     estado: string;
   }
   

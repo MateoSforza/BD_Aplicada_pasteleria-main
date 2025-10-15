@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, Package, Search, Plus } from 'lucide-react';
+import { DollarSign, Package, Search, Plus, ArrowUpLeft, DollarSignIcon } from 'lucide-react';
 import { useCostoExtra, useCreateCostoExtra } from '../hooks/useCostoExtra';
-import StatsCard from '@/components/StatsCard';
-import PopupForm from '@/components/PopUpCreate';
+import StatsCard from '@/components/general/StatsCard';
+import PopupForm from '@/components/general/PopUpCreate';
 
 const CostoExtra: React.FC = () => {
   const { data, isLoading, error } = useCostoExtra();
@@ -85,7 +85,7 @@ const CostoExtra: React.FC = () => {
         <StatsCard
           label="Ingredientes mas costoso"
           value={costoExtraMasCostoso?.nombre ?? "N/A"}
-          icon={Package}
+          icon={DollarSignIcon}
           iconColor="primary"
           delay={0}
           onClick={() => setSearchTerm(costoExtraMasCostoso?.nombre ?? "")}
@@ -93,7 +93,7 @@ const CostoExtra: React.FC = () => {
         <StatsCard
           label="Reportes y estadisticas"
           value={"Vistar"}
-          icon={Package}
+          icon={ArrowUpLeft}
           iconColor="primary"
           delay={0}
           href="/reportes/costosExtras"

@@ -1,10 +1,10 @@
 // src/components/Sidebar.tsx
 import React from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { LogOut, X, Moon, Sun } from 'lucide-react';
-import { navigationItems } from '../config/navigation';
+import { navigationItems } from '../../config/navigation';
 import NavItem from './NavItem';
-import { useTheme } from '../config/ThemeContext';
+import { useTheme } from '../../config/ThemeContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -71,17 +71,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Menú */}
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-  {navigationItems.map((item) => (
-    <NavItem
-      key={item.name}
-      name={item.name}
-      href={item.href}
-      icon={item.icon}
-      children={item.children}
-      onClick={onClose}
-    />
-  ))}
-</nav>
+          {navigationItems.map((item) => (
+            <NavItem
+              key={item.name}
+              name={item.name}
+              href={item.href}
+              icon={item.icon}
+              children={item.children}
+              onClick={onClose}
+            />
+          ))}
+        </nav>
 
         {/* Logout */}
         <div className="p-4 border-t border-primary-200">

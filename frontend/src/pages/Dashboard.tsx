@@ -1,7 +1,7 @@
 import React from "react"
 import { Cake, ChefHat, Handshake, ShoppingCart } from "lucide-react"
 import { useDashboardMetrics } from "../hooks/useDashboardMetrics"
-import StatsCard from "@/components/StatsCard"
+import StatsCard from "@/components/general/StatsCard"
 
 const Dashboard: React.FC = () => {
   const { tortasCount, pedidosPendientes, loading, error } = useDashboardMetrics()

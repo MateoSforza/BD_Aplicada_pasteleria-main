@@ -58,6 +58,7 @@ export const getPedidos = async (): Promise<PedidoResumen[]> => {
     nombreCliente: pedido.NombreCliente,
     fecha: pedido.Fecha,
     total: pedido.Total,
+    metodoDePago: pedido.MetodoDePago,
     estado: pedido.Estado,
   }));
 };

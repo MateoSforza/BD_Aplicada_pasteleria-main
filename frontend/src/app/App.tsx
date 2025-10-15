@@ -8,6 +8,7 @@ const App: React.FC = () => {
       <h1 style={{ textAlign: 'center', color: '#b45f06' }}>Pastelería</h1>
       <nav style={{ textAlign: 'center', marginBottom: 20 }}>
         <Link to="/" style={{ margin: '0 1rem' }}>Dashboard</Link>
+        <Link to="/ingredientes" style={{ margin: '0 1rem' }}>Ingredientes</Link>
       </nav>
       <Outlet />
     </div>
