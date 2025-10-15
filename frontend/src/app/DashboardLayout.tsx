@@ -1,51 +1,50 @@
-import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
-
-const sidebarStyle: React.CSSProperties = {
-  width: 220,
-  background: '#f4e2d8',
-  padding: '2rem 1rem',
-  minHeight: '100vh',
-  boxShadow: '2px 0 8px #0001',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 16,
-};
-
-const linkStyle: React.CSSProperties = {
-  display: 'block',
-  padding: '12px 18px',
-  margin: '4px 0',
-  borderRadius: 8,
-  color: '#b45f06',
-  textDecoration: 'none',
-  fontWeight: 600,
-  fontSize: 18,
-  background: 'transparent',
-  transition: 'background 0.2s',
-};
-
-const activeLinkStyle: React.CSSProperties = {
-  ...linkStyle,
-  background: '#fff7e6',
-  color: '#00704a',
-};
+// src/app/DashboardLayout.tsx
+import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import { Menu } from 'lucide-react';
+import Sidebar from '../components/Sidebar';
 
 const DashboardLayout: React.FC = () => {
-  // TODO: highlight active link if needed
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f9f6f2' }}>
-      <aside style={sidebarStyle}>
-        <h2 style={{ color: '#b45f06', marginBottom: 32, textAlign: 'center' }}>Pastelería</h2>
-        <Link to="/tortas" style={linkStyle}>Tortas</Link>
-        <Link to="/medidas" style={linkStyle}>Medidas</Link>
-        <Link to="/ingredientes" style={linkStyle}>Ingredientes</Link>
-        <Link to="/costos-extra" style={linkStyle}>Costos Extra</Link>
-        <Link to="/reportes" style={linkStyle}>Reportes</Link>
-      </aside>
-      <main style={{ flex: 1, padding: '2rem 3vw', minHeight: '100vh' }}>
-        <Outlet />
-      </main>
+    <div className="flex h-screen bg-primary-50 text-primary-900 font-sans">
+      {/* Overlay en móvil */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black bg-opacity-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* Contenido */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Topbar */}
+        <header className="bg-primary-100 shadow-sm border-b border-primary-200 sticky top-0 z-10">
+          <div className="flex items-center justify-between h-16 px-6">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="text-primary-600 hover:text-primary-700 lg:hidden"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <h2 className="text-lg font-bold text-primary-800 tracking-wide">
+              Panel de Control
+            </h2>
+            <div className="w-6"></div>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto bg-primary-100">
+          <div className="p-6 space-y-6">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 };

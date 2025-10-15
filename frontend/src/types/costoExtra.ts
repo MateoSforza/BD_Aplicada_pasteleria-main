@@ -4,3 +4,9 @@ export interface CostoExtra {
     precioUnitario: number;
     nota?: string;
 }
+
+export interface CreateCostoExtraDTO{
+    Nombre: string;
+    PrecioUnitario: number;
+    Nota?: string; 
+}

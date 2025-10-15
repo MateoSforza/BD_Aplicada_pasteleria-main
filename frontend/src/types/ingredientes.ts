@@ -4,3 +4,12 @@ export interface Ingrediente {
   unidadCompra: string;
   precioUnitario: number;
 }
+
+export interface CreateIngredienteDTO{
+  Nombre: string;
+  UnidadCompra: string;
+  PrecioUnitario: number;
+}
+
+
+

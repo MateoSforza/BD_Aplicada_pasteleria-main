@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { getIngredientes } from '../api/ingredientes';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getIngredientes, createIngrediente } from '../api/ingredientes';
 import { Ingrediente } from '../types/ingredientes';
 
 export function useIngredientes() {
@@ -8,3 +8,14 @@ export function useIngredientes() {
         queryFn: getIngredientes,
     });
 }
+
+export function useCreateIngrediente() {
+    const queryClient = useQueryClient();
+  
+    return useMutation({
+      mutationFn: createIngrediente,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['ingredientes'] });
+      },
+    });
+  }

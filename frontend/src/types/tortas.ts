@@ -1,35 +1,43 @@
-export interface Torta {
-  idTorta: number;
-  nombre: string;
-  medidas: Medida[];
-  precioPromedio: number;
-  cantidadMedidas: number;
+export interface Ingrediente {
+  IdMedidaIngrediente: number;
+  MedidaId: number;
+  IngredienteId: number;
+  NombreIngrediente: string;
+  CantidadUsada: number;
+  UnidadUsada: string;
+  PrecioUnitario: number;
+  CostoTotal: number;
+}
+
+export interface CostoExtra {
+  IdMedidaCostoExtra: number;
+  IdMedida: number;
+  IdCostoExtra: number;
+  NombreCostoExtra: string;
+  CantidadUsada: number;
+  PrecioUnitario: number;
+  CostoTotal: number;
 }
 
 export interface Medida {
-  idMedida: number;
-  idTorta: number;
-  tamano: string;
-  ingredientes: TortaIngrediente[];
-  costosExtra: MedidaCostoExtra[];
-  costoIngredientes: number;
-  costoExtras: number;
-  costoTotal: number;
-  precioVenta: number;
-  ganancia: number;
+  IdMedida: number;
+  IdTorta: number;
+  Tamano: string;
+  Estado: string;
+  // Ingredientes: Ingrediente[];
+  // CostosExtra: CostoExtra[];
+  CostoIngredientes: number;
+  CostoExtras: number;
+  CostoTotal: number;
+  PrecioVenta: number;
+  Ganancia: number;
 }
 
-export interface TortaIngrediente {
-  // Define los campos según el DTO real del backend
-  // Ejemplo:
-  // idIngrediente: number;
-  // nombre: string;
-  // costoTotal: number;
-}
-
-export interface MedidaCostoExtra {
-  // Define los campos según el DTO real del backend
-  // Ejemplo:
-  // descripcion: string;
-  // costoTotal: number;
+export interface Torta {
+  IdTorta: number;
+  Nombre: string;
+  Estado: string;
+  Medidas: Medida[];
+  PrecioPromedio: number;
+  CantidadMedidas: number;
 }
