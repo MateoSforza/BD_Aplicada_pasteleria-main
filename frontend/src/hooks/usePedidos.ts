@@ -8,3 +8,11 @@ export function usePedidos() {
         queryFn: api.getPedidos,
     });
 }
+
+export function usePedidoCompleto(id: number) {
+    return useQuery<types.Pedido>({
+      queryKey: ['pedido', id],
+      queryFn: () => api.getPedidoById(id),
+      enabled: !!id,
+    });
+  }

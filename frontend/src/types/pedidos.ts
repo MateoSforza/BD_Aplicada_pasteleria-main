@@ -30,6 +30,7 @@ export interface Extra {
     nombreTorta: string;
     tamanoMedida: string;
     precioMomentoMedida: number;
+    totalProducto: number
     extras: Extra[];
     ingredientesExtras: IngredienteExtra[];
   }

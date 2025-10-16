@@ -24,6 +24,7 @@ const mapPedidoFromBackend = (data: any): Pedido => ({
     cantidad: detalle.Cantidad,
     nombreTorta: detalle.NombreTorta,
     tamanoMedida: detalle.TamanoMedida,
+    totalProducto: detalle.TotalProducto,
     precioMomentoMedida: detalle.PrecioMomentoMedida,
     extras: (detalle.Extras || []).map((extra: any) => ({
       idExtras: extra.IdExtras,
@@ -72,7 +73,6 @@ export const getPedidoById = async (id: number): Promise<Pedido> => {
 // Buscar pedidos por nombre de cliente
 export const getPedidosByNombre = async (nombre: string): Promise<Pedido[]> => {
   const response = await api.get(`/api/Pedidos/nombre/${nombre}`);
-  console.log('Pedidos por nombre:', response.data);
   
   // El API devuelve un array de pedidos
   const pedidosArray = Array.isArray(response.data) ? response.data : [];
@@ -178,4 +178,31 @@ export const actualizarEstadoPedido = async (id: number, estado: string): Promis
 // Eliminar pedido
 export const eliminarPedido = async (id: number): Promise<void> => {
   await api.delete(`/api/Pedidos/${id}`);
+};
+
+// Ganancias del mes 
+export const getGananciaMensual = async (): Promise<number> => {
+  try {
+    const hoy = new Date();
+
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+      .toISOString()
+      .split("T")[0];
+    const finMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)
+      .toISOString()
+      .split("T")[0];
+
+    const response = await api.get(`/api/Pedidos/FechaRango/${inicioMes}/${finMes}`);
+
+    const pedidosArray = Array.isArray(response.data) ? response.data : [];
+
+    const totalGanancia = pedidosArray
+      // .filter((pedido: any) => pedido.Estado?.toLowerCase() === "completado")
+      .reduce((acc: number, pedido: any) => acc + (pedido.Ganancia ?? 0), 0);
+
+    return totalGanancia; 
+  } catch (error) {
+    console.error("Error al calcular la ganancia mensual:", error);
+    return 0;
+  }
 };

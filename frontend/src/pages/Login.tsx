@@ -96,7 +96,7 @@ const Login: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary-600 hover:bg-primary-500 text-q-100 font-semibold py-2 px-4 rounded-lg shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary-600 hover:bg-primary-500 text-primary-100 font-semibold py-2 px-4 rounded-lg shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
               </motion.button>

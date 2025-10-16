@@ -24,7 +24,6 @@ export const getTortas = async (): Promise<Torta[]> => {
     })),
   }));
 
-  console.log('Tortas mapeadas:', mapped.length);
   return mapped;
 };
 
