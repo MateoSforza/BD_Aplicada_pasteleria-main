@@ -34,6 +34,7 @@ const PedidoDetallePopup: React.FC<PedidoDetallePopupProps> = ({ id, onClose }) 
       <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-lg overflow-y-auto max-h-[80vh]">
         <h2 className="text-xl font-semibold mb-4">Detalle del Pedido ID: #{pedido.idPedido}</h2>
         <p><strong>Cliente:</strong> {pedido.nombreCliente}</p>
+        <p><strong>Telefono:</strong> +{pedido.telefonoCliente}</p>
         <p> <strong>Fecha:</strong>{" "}
           {new Date(pedido.fecha).toLocaleDateString("es-AR", {
             day: "2-digit",
@@ -42,13 +43,13 @@ const PedidoDetallePopup: React.FC<PedidoDetallePopupProps> = ({ id, onClose }) 
           })} </p>
         <p><strong>Estado:</strong> {pedido.estado}</p>
         <p><strong>Estado de pago:</strong> {pedido.metodoDePago}</p>
-        <p><strong>Métodos de pago disponibles:</strong></p>
+        { /* <p><strong>Métodos de pago disponibles:</strong></p>
           <ul className="list-disc list-inside ml-4">
             <li><strong>Efectivo</strong></li>
             <li><strong>Alias:</strong> Camilamariaguinazu</li>
           </ul>
         <p><strong>Total:</strong> $ {pedido.total?.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-        </p>
+        </p> */}
         {pedido.detallePedidos?.map((detalle: any, idx: number) => (
           <div key={idx} className="mt-4 border rounded-lg p-3 bg-primary-50">
             <h3 className="font-semibold">{detalle.nombreTorta}, {detalle.tamanoMedida} </h3>
@@ -57,7 +58,7 @@ const PedidoDetallePopup: React.FC<PedidoDetallePopupProps> = ({ id, onClose }) 
                 Cantidad: {detalle.cantidad}
               </p>
               <p className="font-semibold text-right">
-              Total: $ {detalle.totalProducto?.toLocaleString("es-AR", {
+               $ {detalle.totalProducto?.toLocaleString("es-AR", {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0
                       })}
@@ -65,6 +66,7 @@ const PedidoDetallePopup: React.FC<PedidoDetallePopupProps> = ({ id, onClose }) 
             </div>
             {detalle.extras?.length > 0 && (
               <ul className="list-disc list-inside text-sm text-primary-600">
+                <p>Extras: </p>
                 {detalle.extras.map((e: any, i: number) => (
                   <li key={i}>
                   {e.nombreCostoExtra} × {e.cantidad}
@@ -73,18 +75,41 @@ const PedidoDetallePopup: React.FC<PedidoDetallePopupProps> = ({ id, onClose }) 
                 ))}
               </ul>
             )}
+            {detalle.ingredientesExtras?.length > 0 && (
+              <ul className="list-disc list-inside text-sm text-primary-600">
+                <p>Ingredientes extras: </p>
+                {detalle.ingredientesExtras.map((e: any, i: number) => (
+                  <li key={i}>
+                  {e.nombreIngrediente} × {e.cantidad}
+                  {e.nota ? `  "${e.nota}"` : ""}
+                </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
 
-        <button
-          onClick={onClose}
-          className="mt-6 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600"
-        >
-          Cerrar
-        </button>
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            onClick={onClose}
+            className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400"
+          >
+            Cancelar
+          </button>
+
+          <button
+            onClick={onClose}
+            className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600"
+          >
+            Enviar
+          </button>
+        </div>
+
       </div>
     </div>
   );
 };
 
 export default PedidoDetallePopup;
+
+

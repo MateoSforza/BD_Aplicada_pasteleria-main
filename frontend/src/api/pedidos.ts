@@ -52,8 +52,8 @@ const mapPedidoFromBackend = (data: any): Pedido => ({
 // Obtener todos los pedidos (resumen)
 export const getPedidos = async (): Promise<PedidoResumen[]> => {
   const response = await api.get('/api/Pedidos');
-  
   const pedidosArray = Array.isArray(response.data) ? response.data : [];
+
   return pedidosArray.map((pedido: any) => ({
     idPedido: pedido.IdPedido,
     nombreCliente: pedido.NombreCliente,
@@ -112,13 +112,11 @@ export const getPedidosPendientesHoy = async (): Promise<number> => {
       
       const pedidos = response.data.map(mapPedidoFromBackend);
       
-      // Contar solo los que tienen estado "pendiente" o "pagado"
-      /*const count = pedidos.filter(pedido => 
-        pedido.estado.toLowerCase() === 'pendiente' || 
-        pedido.estado.toLowerCase() === 'pagado'
-      ).length;*/
+      const count = pedidos.filter(p =>
+        p.estado.toLowerCase() !== 'entregado' &&
+        p.estado.toLowerCase() !== 'cancelado'
+      ).length;
 
-      const count = pedidos.length
       
       return count;
     } catch (error: any) {
@@ -172,7 +170,16 @@ export const actualizarPedido = async (id: number, pedido: ActualizarPedidoDTO):
 
 // Actualizar estado
 export const actualizarEstadoPedido = async (id: number, estado: string): Promise<void> => {
-  await api.patch(`/api/Pedidos/${id}/estado`, { estado });
+  await api.patch(`/api/Pedidos/${id}/estado`, JSON.stringify(estado), {
+    headers: { "Content-Type": "application/json" },
+  });
+};
+
+// actualizar pedido rapido 
+export const actualizarPedidoEncabezado = async (id: number, data: any): Promise<void> => {
+  await api.patch(`/api/Pedidos/${id}`, data, {
+    headers: { "Content-Type": "application/json" },
+  });
 };
 
 // Eliminar pedido
@@ -197,7 +204,7 @@ export const getGananciaMensual = async (): Promise<number> => {
     const pedidosArray = Array.isArray(response.data) ? response.data : [];
 
     const totalGanancia = pedidosArray
-      // .filter((pedido: any) => pedido.Estado?.toLowerCase() === "completado")
+      .filter((pedido: any) => pedido.Estado?.toLowerCase() === "completado")
       .reduce((acc: number, pedido: any) => acc + (pedido.Ganancia ?? 0), 0);
 
     return totalGanancia; 

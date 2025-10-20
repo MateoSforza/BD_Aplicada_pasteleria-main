@@ -5,14 +5,16 @@ import StatsCard from "@/components/general/StatsCard";
 import PedidosTable from "@/components/pedidos/PedidosTable";
 import PedidoDetallePopup from "@/components/pedidos/PedidoDetallePopup";
 import { usePedidos } from "@/hooks/usePedidos";
-import { useDashboardMetrics } from "@/hooks/useDashboardMetrics"; // 👈 nuevo import
+import { useDashboardMetrics } from "@/hooks/useDashboardMetrics";
+import { useUpdatePedido } from "@/hooks/useUpdatePedido"; 
 
 const PedidosDashboard: React.FC = () => {
   const { data: pedidos, isLoading } = usePedidos();
+  const { data: metrics, isLoading: metricsLoading } = useDashboardMetrics();
+  const { mutate: updatePedido } = useUpdatePedido(); 
+
   const [popupOpen, setPopupOpen] = useState(false);
   const [selectedPedidoId, setSelectedPedidoId] = useState<number | null>(null);
-
-  const { pedidosPendientes, gananciaMensual, loading: metricsLoading } = useDashboardMetrics();
 
   const list = pedidos ?? [];
   const totalPedidos = list.length;
@@ -21,24 +23,32 @@ const PedidosDashboard: React.FC = () => {
     ["entregado", "completado"].includes((p.estado ?? "").toLowerCase())
   ).length;
 
-  const handleAddPedido = (nuevo: any) => {
-    console.log("Nuevo pedido agregado:", nuevo);
-  };
-
   const loading = isLoading || metricsLoading;
+
+  const handleUpdatePedido = (pedidoActualizado: any) => {
+    updatePedido(pedidoActualizado);
+  };
 
   return (
     <div className="p-8 space-y-8">
       {/* --- Métricas --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard label="Pedidos totales" value={totalPedidos} icon={ShoppingBag} />
-        <StatsCard label="Pendientes" value={pedidosPendientes} icon={Clock} />
-        <StatsCard label="Entregados" value={pedidosEntregados} icon={CheckCircle} />
+        <StatsCard
+          label="Pendientes"
+          value={metrics?.pedidosPendientes ?? "0"}
+          icon={Clock}
+        />
+        <StatsCard
+          label="Entregados"
+          value={pedidosEntregados}
+          icon={CheckCircle}
+        />
         <StatsCard
           label="Ganancia mensual"
-          value={`$ ${Number(gananciaMensual).toLocaleString("es-AR", {
+          value={`$ ${Number(metrics?.gananciaMensual ?? 0).toLocaleString("es-AR", {
             minimumFractionDigits: 0,
-            maximumFractionDigits: 0
+            maximumFractionDigits: 0,
           })}`}
           icon={DollarSign}
         />
@@ -66,6 +76,7 @@ const PedidosDashboard: React.FC = () => {
           data={list}
           isLoading={loading}
           onView={(pedido) => setSelectedPedidoId(pedido.idPedido)}
+          onUpdate={handleUpdatePedido}
         />
       </motion.div>
 
