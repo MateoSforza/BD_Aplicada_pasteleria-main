@@ -173,3 +173,19 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* Small fade-up animation used in report cards */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fadeUp 320ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+/* Utility for focus-visible ring (available via Tailwind but provide a small helper) */
+.focus-ring:focus-visible {
+  box-shadow: 0 0 0 4px rgba(245,148,88,0.12);
+  outline: none;
+}

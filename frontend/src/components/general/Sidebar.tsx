@@ -30,7 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             {/* Botón cerrar (móvil) */}
             <button
               onClick={onClose}
-              className="lg:hidden text-primary-600 hover:bg-primary-300 p-2 rounded"
+                className="lg:hidden text-primary-600 hover:bg-primary-300 p-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2"
             >
               <X className="w-5 h-5" />
             </button>
@@ -54,9 +54,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Menú: centrado vertical y horizontalmente */}
-        <div className="flex-1 flex items-center justify-center">
-          <nav className="px-4 py-6 space-y-2 overflow-y-auto flex flex-col items-center" style={{ textTransform: 'uppercase', fontFamily: 'Arial Black, Arial, sans-serif' }}>
+        {/* Menú: área de scroll entre header (arriba) y logout (abajo).
+            No centrar verticalmente para que el header/footer no se muevan
+            cuando se expanden submenús. */}
+        <div className="flex-1 overflow-hidden">
+          <nav className="h-full px-4 py-6 space-y-2 overflow-y-auto flex flex-col items-center" style={{ textTransform: 'uppercase', fontFamily: 'Arial Black, Arial, sans-serif' }}>
             {navigationItems.map((item) => (
               <NavItem
                 key={item.name}
@@ -77,7 +79,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className="p-4 border-t border-primary-200">
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-primary-300 hover:bg-primary-500 text-primary-800 hover:text-white rounded-lg font-semibold transition-colors duration-200"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-primary-300 hover:bg-primary-500 text-primary-800 hover:text-white rounded-lg font-semibold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2"
+            aria-label="Cerrar sesión"
           >
             <LogOut className="w-5 h-5" />
             Cerrar Sesión

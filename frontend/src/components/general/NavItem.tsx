@@ -78,12 +78,14 @@ const NavItem: React.FC<NavItemProps> = ({ name, href, icon: Icon, showIcon = tr
     <Link
       to={href}
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 ${
         large ? 'text-[36px] tracking-wide' : 'text-sm uppercase tracking-wider'
       } ${isActive ? 'font-extrabold text-primary-900' : 'text-primary-700 hover:text-primary-900'}`}
       style={{ fontFamily: 'Arial Black, Arial, sans-serif' }}
+      role="link"
+      aria-current={isActive ? 'page' : undefined}
     >
-      {showIcon && Icon && <Icon className="w-5 h-5" />}
+      {showIcon && Icon && <Icon className="w-5 h-5" aria-hidden="true" />}
       {noUnderline ? (
         <span className={`mx-auto ${isActive ? 'text-primary-900 font-extrabold' : ''}`}>{name}</span>
       ) : (
