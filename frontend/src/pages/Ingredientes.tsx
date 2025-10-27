@@ -1,37 +1,91 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChefHat, Package, Search, Plus, ArrowUpLeft, DollarSignIcon } from 'lucide-react';
-import { useIngredientes, useCreateIngrediente } from '../hooks/useIngredientes';
+import { ChefHat, Package, Search, Plus, ArrowUpLeft, DollarSignIcon, Trash2, Edit } from 'lucide-react';
+import { useIngredientes, useCreateIngrediente, useUpdateIngrediente, useDeleteIngrediente } from '../hooks/useIngredientes';
 import StatsCard from '@/components/general/StatsCard';
 import PopupForm from '@/components/general/PopUpCreate';
+import PopupEdit from '@/components/general/PopupEdit';
+import PopupConfirm from '@/components/general/PopupConfirm';
 
 const Ingredientes: React.FC = () => {
   // Hooks para obtener y crear ingredientes
   const { data, isLoading, error: errorIngredientes } = useIngredientes();
   const { mutate, isPending, isSuccess, error: errorCreate } = useCreateIngrediente();
+  const { mutate: updateMutate } = useUpdateIngrediente();
+  const { mutate: deleteMutate } = useDeleteIngrediente();
 
   // Estados locales
   const [searchTerm, setSearchTerm] = useState('');
   const [popupCreateOpen, setPopupCreateOpen] = useState(false);
+  const [popupEditOpen, setPopupEditOpen] = useState(false);
+  const [popupConfirmOpen, setPopupConfirmOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [itemToDelete, setItemToDelete] = useState<{ id: number; nombre: string } | null>(null);
 
   // Crear nuevo ingrediente
   const handleCreate = (formData: any) => {
-    const dto = {
-      Nombre: formData.Nombre || formData.nombre,
-      UnidadCompra: formData.UnidadCompra || formData.unidadCompra,
-      PrecioUnitario: parseFloat(formData.PrecioUnitario || formData.precioUnitario || formData.precio),
-    };
   
-    console.log("Datos enviados al backend:", dto);
-  
-    mutate(dto, {
+    mutate(formData, {
       onSuccess: () => {
         setPopupCreateOpen(false);
       },
       onError: (err: any) => {
-        console.error("Error al crear ingrediente:", err.response?.data || err);
+        console.error("Error al crear ingrediente:");
+        alert("Error al crear ingrediente. Verifica los datos.");
       },
     });
+  };
+
+  // Actualizar ingrediente
+  const handleUpdate = (formData: any) => {
+    if (!selectedItem) return;
+    
+    updateMutate(
+      { id: selectedItem.idIngrediente, data: formData },
+      {
+        onSuccess: () => {
+          setPopupEditOpen(false);
+          setSelectedItem(null);
+        },
+        onError: (err: any) => {
+          console.error("Error al actualizar ingrediente:");
+        },
+      }
+    );
+  };
+
+  // Eliminar ingrediente
+  const handleDelete = (id: number, nombre: string) => {
+    setItemToDelete({ id, nombre });
+    setPopupConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (!itemToDelete) return;
+    
+    deleteMutate(itemToDelete.id, {
+      onSuccess: () => {
+        setPopupConfirmOpen(false);
+        setItemToDelete(null);
+      },
+      onError: (err: any) => {
+        console.error("Error al eliminar ingrediente:");
+        alert("Error al eliminar el ingrediente");
+        setPopupConfirmOpen(false);
+        setItemToDelete(null);
+      },
+    });
+  };
+
+  const cancelDelete = () => {
+    setPopupConfirmOpen(false);
+    setItemToDelete(null);
+  };
+
+  // Abrir popup de edición
+  const handleEdit = (ingrediente: any) => {
+    setSelectedItem(ingrediente);
+    setPopupEditOpen(true);
   };
 
   // Filtrado por búsqueda
@@ -159,7 +213,9 @@ const Ingredientes: React.FC = () => {
                 <th className="bg-primary-200 px-6 py-4 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider">#</th>
                 <th className="bg-primary-200 px-6 py-4 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider">Nombre</th>
                 <th className="bg-primary-200 px-6 py-4 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider">Unidad</th>
+                <th className="bg-primary-200 px-6 py-4 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider">Stock</th>
                 <th className="bg-primary-200 px-6 py-4 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider">Precio Unitario</th>
+                <th className="bg-primary-200 px-6 py-4 text-center text-xs font-semibold text-primary-700 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-primary-200">
@@ -185,12 +241,35 @@ const Ingredientes: React.FC = () => {
                       {ing.unidadCompra}
                     </span>
                   </td>
+                  <td className="px-6 py-4 text-sm text-primary-900">
+                    <span className="font-semibold">
+                      {ing.stock !== undefined && ing.stock !== null ? ing.stock : '-'}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-sm font-semibold text-green-600">
                     {ing.precioUnitario.toLocaleString('es-AR', {
                       style: 'currency',
                       currency: 'ARS',
                       minimumFractionDigits: 2,
                     })}
+                  </td>
+                  <td className="px-6 py-4 text-sm">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleEdit(ing)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Editar"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(ing.idIngrediente, ing.nombre)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Eliminar"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </motion.tr>
               ))}
@@ -219,6 +298,35 @@ const Ingredientes: React.FC = () => {
         unidadesCompra={["kg", "g", "unidad", "litro", "ml"]}
         onClose={() => setPopupCreateOpen(false)}
         onSubmit={handleCreate}
+      />
+
+      {/* Popup de edición */}
+      {selectedItem && (
+        <PopupEdit
+          isOpen={popupEditOpen}
+          tipo="ingrediente"
+          itemData={{
+            id: selectedItem.idIngrediente,
+            nombre: selectedItem.nombre,
+            precioUnitario: selectedItem.precioUnitario,
+            stock: selectedItem.stock
+          }}
+          onClose={() => {
+            setPopupEditOpen(false);
+            setSelectedItem(null);
+          }}
+          onSubmit={handleUpdate}
+        />
+      )}
+
+      {/* Popup de confirmación de eliminación */}
+      <PopupConfirm
+        isOpen={popupConfirmOpen}
+        title="Eliminar Ingrediente"
+        message="¿Está seguro de que desea eliminar este ingrediente?"
+        itemName={itemToDelete?.nombre}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
       />
 
       {/* Mostrar error de creación si ocurre */}

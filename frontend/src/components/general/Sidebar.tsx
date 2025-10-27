@@ -12,9 +12,9 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { logout, getStoredUser } = useAuth();
+  const { logout, getUser } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const usuario = getStoredUser();
+  const usuario = getUser();
 
   return (
     <aside

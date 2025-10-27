@@ -19,3 +19,27 @@ export function useCreateCostoExtra() {
       },
     });
   }
+
+export function useUpdateCostoExtra() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => 
+      import('../api/costoExtra').then(api => api.updateCostoExtra(id, data)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['costosExtra'] });
+    },
+  });
+}
+
+export function useDeleteCostoExtra() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => 
+      import('../api/costoExtra').then(api => api.eliminarCostoExtra(id)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['costosExtra'] });
+    },
+  });
+}

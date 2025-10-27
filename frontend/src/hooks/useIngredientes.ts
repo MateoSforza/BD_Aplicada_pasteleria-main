@@ -19,3 +19,26 @@ export function useCreateIngrediente() {
       },
     });
   }
+export function useUpdateIngrediente() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => 
+      import('../api/ingredientes').then(api => api.updateIngrediente(id, data)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ingredientes'] });
+    },
+  });
+}
+
+export function useDeleteIngrediente() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => 
+      import('../api/ingredientes').then(api => api.eliminarIngrediente(id)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ingredientes'] });
+    },
+  });
+}

@@ -1,5 +1,5 @@
 import api from './http';
-import { CostoExtra, CreateCostoExtraDTO} from '../types/costoExtra';
+import { CostoExtra, CreateCostoExtraDTO, UpdateCostoExtraDTO } from '../types/costoExtra';
 
 export const getCostosExtra = async (): Promise<CostoExtra[]> => {
   const response = await api.get('/api/CostosExtra');
@@ -9,7 +9,8 @@ export const getCostosExtra = async (): Promise<CostoExtra[]> => {
     idCostoExtra: costo.IdCostoExtra || costo.idCostoExtra,
     nombre: costo.Nombre || costo.nombre,
     precioUnitario: costo.PrecioUnitario || costo.precioUnitario,
-    nota: costo.Nota || costo.nota
+    nota: costo.Nota || costo.nota,
+    stock: costo.Stock ?? costo.stock ?? null
   }));
 };
 
@@ -21,4 +22,9 @@ export const createCostoExtra = async (createCostoExtra : CreateCostoExtraDTO): 
 //eliminar ingrediente
 export const eliminarCostoExtra = async (id: number): Promise<void> => {
   await api.delete(`/api/CostosExtra/${id}`);
+}
+
+// Actualizar costo extra (precio y/o stock)
+export const updateCostoExtra = async (id: number, data: UpdateCostoExtraDTO): Promise<void> => {
+  await api.put(`/api/CostosExtra/${id}`, data);
 }

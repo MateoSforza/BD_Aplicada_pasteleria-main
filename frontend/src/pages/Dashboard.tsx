@@ -2,9 +2,30 @@ import React from "react"
 import { Cake, ChefHat, Handshake, ShoppingCart } from "lucide-react"
 import { useDashboardMetrics } from "../hooks/useDashboardMetrics"
 import StatsCard from "@/components/general/StatsCard"
+import { useIngredientes } from "@/hooks/useIngredientes"
+import { getGananciaMensual } from "@/api/pedidos"
 
 const Dashboard: React.FC = () => {
-  const { tortasCount, pedidosPendientes, loading, error } = useDashboardMetrics()
+  // Use different variable names to avoid redeclaration errors
+  const {
+    data: dashboardData,
+    isLoading: dashboardLoading,
+    error: dashboardError,
+  } = useDashboardMetrics();
+
+  const {
+    data: ingredientesData,
+    isLoading: ingLoading,
+    error: ingError,
+  } = useIngredientes();
+
+  const tortasCount = dashboardData?.tortasCount ?? "0";
+  const pedidosPendientes = dashboardData?.pedidosPendientes ?? "0";
+  const totalItems = ingredientesData?.length || 0; 
+  const GananciaMensual = dashboardData?.gananciaMensual ?? "0";
+
+  const isLoading = dashboardLoading || ingLoading; 
+  const error = dashboardError || ingError;
 
   return (
     <div className="max-w-7xl mx-auto py-10 px-4">
@@ -25,7 +46,7 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <StatsCard
           label="Productos en el catalogo"
-          value={loading ? "..." : tortasCount}
+          value={isLoading ? "..." : tortasCount}
           icon={Cake}
           iconColor="primary"
           delay={0}
@@ -34,7 +55,7 @@ const Dashboard: React.FC = () => {
 
         <StatsCard
           label="Ingredientes en stock"
-          value={loading ? "..." : "31"}
+          value={isLoading ? "..." : totalItems.toString()} 
           icon={ChefHat}
           iconColor="primary"
           delay={0.1}
@@ -43,7 +64,7 @@ const Dashboard: React.FC = () => {
 
         <StatsCard
           label="Pedidos esta semana"
-          value={loading ? "..." : pedidosPendientes}
+          value={isLoading ? "..." : pedidosPendientes}
           icon={ShoppingCart}
           iconColor="primary"
           delay={0.2}
@@ -52,7 +73,7 @@ const Dashboard: React.FC = () => {
 
         <StatsCard
           label="Ganancia mensual"
-          value={loading ? "..." : "$450,000"}
+          value={isLoading ? "..." : GananciaMensual}
           icon={Handshake}
           iconColor="primary"
           delay={0.3}
@@ -64,9 +85,9 @@ const Dashboard: React.FC = () => {
         <p className="text-lg text-primary-900">
           Selecciona una sección en la barra lateral para comenzar.
         </p>
-        {error && (
+        {error && ( 
           <p className="text-red-500 text-sm mt-2">
-            {error}
+            {typeof error === "string" ? error : error.message}
           </p>
         )}
       </div>

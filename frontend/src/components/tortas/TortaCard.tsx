@@ -2,6 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Torta } from "@/types/tortas";
 import MedidaButton from "./MedidaButton";
+import { Settings } from "lucide-react";
 
 interface TortaCardProps {
   torta: Torta;
@@ -9,6 +10,7 @@ interface TortaCardProps {
   onToggle: () => void;
   medidaSeleccionada: number | null;
   onMedidaSelect: (id: number | null) => void;
+  onGestionarMedidas: (tortaId: number) => void;
 }
 
 export const TortaCard: React.FC<TortaCardProps> = ({
@@ -17,20 +19,21 @@ export const TortaCard: React.FC<TortaCardProps> = ({
   onToggle,
   medidaSeleccionada,
   onMedidaSelect,
+  onGestionarMedidas,
 }) => {
   const disponible = torta.CantidadMedidas > 0;
 
   return (
     <motion.div
-      onClick={disponible ? onToggle : undefined}
-      whileHover={disponible ? {
+      onClick={onToggle}
+      whileHover={{
         scale: 1.02,
         transition: { duration: 0.2 },
-      } : {}}
+      }}
       className={`rounded-xl border-2 transition-all ${
         disponible 
           ? "cursor-pointer border-primary-200 bg-primary-200 hover:border-primary-400" 
-          : "cursor-not-allowed border-primary-200 bg-primary-50 opacity-50"
+          : "cursor-pointer border-primary-200 bg-primary-50 hover:border-primary-300"
       } ${isExpanded ? "shadow-lg" : "shadow-sm"}`}
     >
       {/* Header simple */}
@@ -51,7 +54,7 @@ export const TortaCard: React.FC<TortaCardProps> = ({
 
       {/* Contenido expandible */}
       <AnimatePresence initial={false}>
-        {isExpanded && disponible && (
+        {isExpanded && (
           <motion.div
             key="expanded"
             initial={{ height: 0, opacity: 0 }}
@@ -63,21 +66,61 @@ export const TortaCard: React.FC<TortaCardProps> = ({
             }}
             className="overflow-hidden border-t border-primary-100"
           >
-            <div className="p-5 space-y-2 bg-primary-50 rounded-b-xl">
-              {torta.Medidas.map((medida) => (
-                <MedidaButton
-                  key={medida.IdMedida}
-                  medida={medida}
-                  tortaId={torta.IdTorta}
-                  isSelected={medidaSeleccionada === medida.IdMedida}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onMedidaSelect(
-                      medidaSeleccionada === medida.IdMedida ? null : medida.IdMedida
-                    );
-                  }}
-                />
-              ))}
+            <div className="p-5 space-y-3 bg-primary-50 rounded-b-xl">
+              {disponible ? (
+                <>
+                  {/* Lista de medidas para tortas disponibles */}
+                  <div className="space-y-2">
+                    {torta.Medidas.map((medida) => (
+                      <MedidaButton
+                        key={medida.IdMedida}
+                        medida={medida}
+                        tortaId={torta.IdTorta}
+                        isSelected={medidaSeleccionada === medida.IdMedida}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onMedidaSelect(
+                            medidaSeleccionada === medida.IdMedida ? null : medida.IdMedida
+                          );
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Botón de gestionar medidas */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onGestionarMedidas(torta.IdTorta);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 
+                      bg-primary-500 text-white rounded-lg hover:bg-primary-600 
+                      transition-colors font-medium"
+                  >
+                    <Settings className="w-5 h-5" />
+                    Gestionar Medidas
+                  </button>
+                </>
+              ) : (
+                /* Contenido para tortas no disponibles */
+                <div className="text-center py-4">
+                  <p className="text-primary-600 mb-4">
+                    Esta torta no tiene medidas configuradas
+                  </p>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onGestionarMedidas(torta.IdTorta);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 
+                      bg-primary-500 text-white rounded-lg hover:bg-primary-600 
+                      transition-colors font-medium"
+                  >
+                    <Settings className="w-5 h-5" />
+                    Configurar Medidas
+                  </button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

@@ -100,7 +100,7 @@ export const getPedidosPendientesHoy = async (): Promise<number> => {
         diasHastaDomingo = 1;
       } else {
         
-        diasHastaDomingo = 8 - diaSemana;
+        diasHastaDomingo = 16 - diaSemana; // modificar el 16 al numero 8 para semana
       }
             
       const response = await api.get(`/api/Pedidos/FechaHasta/${diasHastaDomingo}`);
@@ -159,7 +159,32 @@ export const getTotalVentasFecha = async (fechaInicio: string, fechaFin: string)
 
 // Crear pedido
 export const crearPedido = async (pedido: CrearPedidoDTO): Promise<Pedido> => {
-  const response = await api.post('/api/Pedidos', pedido);
+  const pedidoBackend = {
+    IdCliente: pedido.idCliente,
+    NombreCliente: pedido.nombreCliente,
+    TelefonoCliente: pedido.telefonoCliente,
+    Fecha: pedido.fecha,
+    Nota: pedido.nota || '',
+    PrecioExtra: pedido.precioExtra || 0,
+    MetodoDePago: pedido.metodoDePago,
+    Estado: 'Pendiente',
+    DetallePedidos: pedido.detallePedidos.map(detalle => ({
+      IdMedida: detalle.idMedida,
+      Cantidad: detalle.cantidad,
+      Extras: (detalle.extras || []).map(extra => ({
+        IdCostoExtra: extra.idCostoExtra,
+        Nota: extra.nota || '',
+        Cantidad: extra.cantidad
+      })),
+      IngredientesExtras: (detalle.ingredientesExtras || []).map(ing => ({
+        IdIngrediente: ing.idIngrediente,
+        Nota: ing.nota || '',
+        Cantidad: ing.cantidad
+      }))
+    }))
+  };
+
+  const response = await api.post('/api/Pedidos', pedidoBackend);
   return mapPedidoFromBackend(response.data);
 };
 
@@ -204,7 +229,7 @@ export const getGananciaMensual = async (): Promise<number> => {
     const pedidosArray = Array.isArray(response.data) ? response.data : [];
 
     const totalGanancia = pedidosArray
-      .filter((pedido: any) => pedido.Estado?.toLowerCase() === "completado")
+      .filter((pedido: any) => pedido.Estado?.toLowerCase() === "entregado")
       .reduce((acc: number, pedido: any) => acc + (pedido.Ganancia ?? 0), 0);
 
     return totalGanancia; 

@@ -31,7 +31,7 @@ const PedidoDetallePopup: React.FC<PedidoDetallePopupProps> = ({ id, onClose }) 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-lg overflow-y-auto max-h-[80vh]">
+      <div className="bg-primary-100 rounded-xl p-6 w-full max-w-lg shadow-lg overflow-y-auto max-h-[80vh]">
         <h2 className="text-xl font-semibold mb-4">Detalle del Pedido ID: #{pedido.idPedido}</h2>
         <p><strong>Cliente:</strong> {pedido.nombreCliente}</p>
         <p><strong>Telefono:</strong> +{pedido.telefonoCliente}</p>
@@ -48,8 +48,9 @@ const PedidoDetallePopup: React.FC<PedidoDetallePopupProps> = ({ id, onClose }) 
             <li><strong>Efectivo</strong></li>
             <li><strong>Alias:</strong> Camilamariaguinazu</li>
           </ul>
+          */}
         <p><strong>Total:</strong> $ {pedido.total?.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-        </p> */}
+        </p> 
         {pedido.detallePedidos?.map((detalle: any, idx: number) => (
           <div key={idx} className="mt-4 border rounded-lg p-3 bg-primary-50">
             <h3 className="font-semibold">{detalle.nombreTorta}, {detalle.tamanoMedida} </h3>

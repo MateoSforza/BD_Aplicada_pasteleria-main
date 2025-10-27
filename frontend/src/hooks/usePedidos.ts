@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from '../api/pedidos';
 import * as types from '../types/pedidos';
+import { toast } from 'react-toastify';
 
 export function usePedidos() {
     return useQuery<types.PedidoResumen[]>({
@@ -15,4 +16,51 @@ export function usePedidoCompleto(id: number) {
       queryFn: () => api.getPedidoById(id),
       enabled: !!id,
     });
-  }
+}
+
+export function useCrearPedido() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (pedido: types.CrearPedidoDTO) => api.crearPedido(pedido),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pedidos'] });
+      toast.success('Pedido creado exitosamente');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Error al crear el pedido');
+    },
+  });
+}
+
+export function useActualizarPedido() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: types.ActualizarPedidoDTO }) => 
+      api.actualizarPedido(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['pedidos'] });
+      queryClient.invalidateQueries({ queryKey: ['pedido', variables.id] });
+      toast.success('Pedido actualizado exitosamente');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Error al actualizar el pedido');
+    },
+  });
+}
+
+export function useEliminarPedido() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => api.eliminarPedido(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pedidos'] });
+      toast.success('Pedido eliminado exitosamente');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Error al eliminar el pedido');
+    },
+  });
+}

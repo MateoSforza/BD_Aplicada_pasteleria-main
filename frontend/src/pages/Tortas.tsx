@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useTortas } from "../hooks/useTortas";
 import { TortaCard } from "@/components/tortas/TortaCard";
-import { ShinyText } from "@/components/reactbits/shiny-text";
+import { BotonesGestionTorta } from "@/components/tortas/BotonesGestionTorta";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Tortas: React.FC = () => {
   const { data, isLoading, error } = useTortas();
+  const navigate = useNavigate();
   const [tortaSeleccionada, setTortaSeleccionada] = useState<number | null>(null);
   const [medidasSeleccionadas, setMedidasSeleccionadas] = useState<Record<number, number | null>>({});
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,6 +31,14 @@ const Tortas: React.FC = () => {
     torta.Nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Obtener el nombre de la torta seleccionada
+  const tortaSeleccionadaNombre = data.find(t => t.IdTorta === tortaSeleccionada)?.Nombre;
+
+  // Función para ir a gestión de medidas
+  const handleGestionarMedidas = (tortaId: number) => {
+    navigate(`/tortas/${tortaId}/medidas`);
+  };
+
   return (
     <div className="max-w-7xl mx-auto py-10 px-6">
       {/* Header */}
@@ -37,14 +47,14 @@ const Tortas: React.FC = () => {
         <p className="text-primary-600">Gestión de tortas y precios</p>
       </div>
 
-      {/* Search Bar */}
+      {/* Search Bar con botones integrados */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
         className="bg-primary-200 rounded-xl shadow-sm border border-primary-200 p-4 mb-8"
       >
-        <div className="relative">
+        <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400 w-5 h-5" />
           <input
             type="text"
@@ -58,6 +68,17 @@ const Tortas: React.FC = () => {
              rounded-lg 
              focus:ring-2 focus:ring-primary-400 focus:border-transparent 
              outline-none"/>
+        </div>
+        
+        {/* Botones de gestión integrados */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-primary-600">
+            Mostrando {filteredData.length} de {data?.length || 0} tortas
+          </span>
+          <BotonesGestionTorta
+            tortaSeleccionadaId={tortaSeleccionada}
+            tortaSeleccionadaNombre={tortaSeleccionadaNombre}
+          />
         </div>
       </motion.div>
 
@@ -89,6 +110,7 @@ const Tortas: React.FC = () => {
                   [torta.IdTorta]: medidaId
                 }));
               }}
+              onGestionarMedidas={handleGestionarMedidas}
             />
           ))}
         </div>

@@ -6,7 +6,7 @@ interface PopupFormProps {
   unidadesCompra?: string[]; // lista de unidades (por ejemplo ["kg", "g", "unidad", "litro"])
   onClose: () => void;
   onSubmit: (
-    formData: { nombre: string; precio: number; nota?: string; unidadCompra?: string }
+    formData: { Nombre: string; PrecioUnitario: number; Nota?: string; UnidadCompra?: string }
   ) => void;
 }
 
@@ -26,12 +26,34 @@ const PopupForm: React.FC<PopupFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nombre || precio === "") return;
+    
+    if (!nombre || nombre.trim() === "") {
+      alert("El nombre es obligatorio");
+      return;
+    }
+    
+    if (precio === "" || Number(precio) < 0) {
+      alert("El precio debe ser un número mayor a 0");
+      return;
+    }
+    
+    if (tipo === "ingrediente" && (!unidadCompra || unidadCompra === "")) {
+      alert("La unidad de compra es obligatoria");
+      return;
+    }
 
     const data =
       tipo === "ingrediente"
-        ? { nombre, precio: Number(precio), unidadCompra }
-        : { nombre, precio: Number(precio), nota };
+        ? { 
+            Nombre: nombre.trim(), 
+            PrecioUnitario: Number(precio), 
+            UnidadCompra: unidadCompra 
+          }
+        : { 
+            Nombre: nombre.trim(), 
+            PrecioUnitario: Number(precio), 
+            Nota: nota.trim() 
+          };
 
     onSubmit(data);
 
@@ -39,7 +61,6 @@ const PopupForm: React.FC<PopupFormProps> = ({
     setPrecio("");
     setNota("");
     setUnidadCompra("");
-    onClose();
   };
 
   return (
@@ -60,11 +81,13 @@ const PopupForm: React.FC<PopupFormProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nombre */}
           <div>
-            <label className="block text-sm font-medium text-primary-700">Nombre</label>
+            <label className="block text-sm font-medium text-primary-700">Nombre *</label>
             <input
               type="text"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
+              required
+              maxLength={50}
               className="text-primary-0 bg-primary-50 w-full mt-1 px-3 py-2 border border-primary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-400"
               placeholder="Ej. Harina 0000"
             />
@@ -72,11 +95,14 @@ const PopupForm: React.FC<PopupFormProps> = ({
 
           {/* Precio */}
           <div>
-            <label className="block text-sm font-medium text-primary-700">Precio</label>
+            <label className="block text-sm font-medium text-primary-700">Precio *</label>
             <input
               type="number"
+              step="0.01"
+              min="0.01"
               value={precio}
               onChange={(e) => setPrecio(e.target.value ? Number(e.target.value) : "")}
+              required
               className="text-primary-0 bg-primary-50 w-full mt-1 px-3 py-2 border border-primary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-400"
               placeholder="Ej. 1500"
             />
@@ -86,12 +112,13 @@ const PopupForm: React.FC<PopupFormProps> = ({
           {tipo === "ingrediente" ? (
             <div>
               <label className="block text-sm font-medium text-primary-700">
-                Unidad de compra
+                Unidad de compra *
               </label>
               <select
                 value={unidadCompra}
                 onChange={(e) => setUnidadCompra(e.target.value)}
-                className="text-primary-0 bg-primary-50 w-full mt-1 px-3 py-2 border border-graprimaryy-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-400"
+                required
+                className="text-primary-0 bg-primary-50 w-full mt-1 px-3 py-2 border border-primary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-400"
               >
                 <option value="">Seleccionar unidad</option>
                 {unidadesCompra.map((unidad) => (
@@ -103,10 +130,11 @@ const PopupForm: React.FC<PopupFormProps> = ({
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-primary-700">Nota</label>
+              <label className="block text-sm font-medium text-primary-700">Nota (Opcional)</label>
               <textarea
                 value={nota}
                 onChange={(e) => setNota(e.target.value)}
+                maxLength={200}
                 className="text-primary-0 bg-primary-100 w-full mt-1 px-3 py-2 border border-primary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-400"
                 rows={3}
                 placeholder="Detalles opcionales..."

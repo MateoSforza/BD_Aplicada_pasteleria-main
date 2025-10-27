@@ -1,35 +1,91 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, Package, Search, Plus, ArrowUpLeft, DollarSignIcon } from 'lucide-react';
-import { useCostoExtra, useCreateCostoExtra } from '../hooks/useCostoExtra';
+import { DollarSign, Package, Search, Plus, ArrowUpLeft, DollarSignIcon, Trash2, Edit } from 'lucide-react';
+import { useCostoExtra, useCreateCostoExtra, useUpdateCostoExtra, useDeleteCostoExtra } from '../hooks/useCostoExtra';
 import StatsCard from '@/components/general/StatsCard';
 import PopupForm from '@/components/general/PopUpCreate';
+import PopupEdit from '@/components/general/PopupEdit';
+import PopupConfirm from '@/components/general/PopupConfirm';
 
 const CostoExtra: React.FC = () => {
   const { data, isLoading, error } = useCostoExtra();
   const [searchTerm, setSearchTerm] = useState('');
 
   const [popupCreateOpen, setPopupCreateOpen] = useState(false);
+  const [popupEditOpen, setPopupEditOpen] = useState(false);
+  const [popupConfirmOpen, setPopupConfirmOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [itemToDelete, setItemToDelete] = useState<{ id: number; nombre: string } | null>(null);
+  
   const { mutate } = useCreateCostoExtra(); 
+  const { mutate: updateMutate } = useUpdateCostoExtra();
+  const { mutate: deleteMutate } = useDeleteCostoExtra(); 
 
   // Crear nuevo Costo Extra
   const handleCreate = (formData: any) => {
-    const dto = {
-      Nombre: formData.Nombre || formData.nombre,
-      PrecioUnitario: parseFloat(formData.PrecioUnitario || formData.precioUnitario || formData.precio),
-      Nota: formData.Nota || formData.nota || "",
-    };
+    console.log("Datos enviados al backend:", formData);
   
-    console.log("Datos enviados al backend:", dto);
-  
-   mutate(dto, {
+   mutate(formData, {
       onSuccess: () => {
         setPopupCreateOpen(false);
       },
       onError: (err: any) => {
-        console.error("Error al crear costo extra:", err.response?.data || err);
+        console.error("Error al crear costo extra:");
+        alert("Error al crear costo extra. Verifica los datos.");
       }, 
     });
+  };
+
+  // Actualizar costo extra
+  const handleUpdate = (formData: any) => {
+    if (!selectedItem) return;
+    
+    updateMutate(
+      { id: selectedItem.idCostoExtra, data: formData },
+      {
+        onSuccess: () => {
+          setPopupEditOpen(false);
+          setSelectedItem(null);
+        },
+        onError: (err: any) => {
+          console.error("Error al actualizar costo extra:");
+        },
+      }
+    );
+  };
+
+  // Eliminar costo extra
+  const handleDelete = (id: number, nombre: string) => {
+    setItemToDelete({ id, nombre });
+    setPopupConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (!itemToDelete) return;
+    
+    deleteMutate(itemToDelete.id, {
+      onSuccess: () => {
+        setPopupConfirmOpen(false);
+        setItemToDelete(null);
+      },
+      onError: (err: any) => {
+        console.error("Error al eliminar costo extra:", err.response?.data || err);
+        alert("Error al eliminar el costo extra");
+        setPopupConfirmOpen(false);
+        setItemToDelete(null);
+      },
+    });
+  };
+
+  const cancelDelete = () => {
+    setPopupConfirmOpen(false);
+    setItemToDelete(null);
+  };
+
+  // Abrir popup de edición
+  const handleEdit = (costo: any) => {
+    setSelectedItem(costo);
+    setPopupEditOpen(true);
   };
 
   // Filtrar costos extra por búsqueda
@@ -160,10 +216,16 @@ const CostoExtra: React.FC = () => {
                   Nombre
                 </th>
                 <th className="bg-primary-200 px-6 py-4 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider">
+                  Stock
+                </th>
+                <th className="bg-primary-200 px-6 py-4 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider">
                   Precio Unitario
                 </th>
                 <th className="bg-primary-200 px-6 py-4 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider">
                   Nota
+                </th>
+                <th className="bg-primary-200 px-6 py-4 text-center text-xs font-semibold text-primary-700 uppercase tracking-wider">
+                  Acciones
                 </th>
               </tr>
             </thead>
@@ -185,6 +247,11 @@ const CostoExtra: React.FC = () => {
                       <span className="font-medium">{costo.nombre}</span>
                     </div>
                   </td>
+                  <td className="px-6 py-4 text-sm text-primary-900 text-center">
+                    <span className="font-semibold">
+                      {costo.stock !== null && costo.stock !== undefined ? costo.stock : '-'}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-sm font-semibold text-green-600">
                     {costo.precioUnitario?.toLocaleString('es-AR', {
                       style: 'currency',
@@ -201,6 +268,24 @@ const CostoExtra: React.FC = () => {
                       <span className="text-primary-400 italic">Sin nota</span>
                     )}
                   </td>
+                  <td className="px-6 py-4 text-sm">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleEdit(costo)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Editar"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(costo.idCostoExtra, costo.nombre)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Eliminar"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
                 </motion.tr>
               ))}
             </tbody>
@@ -213,6 +298,35 @@ const CostoExtra: React.FC = () => {
         tipo="costoextra"
         onClose={() => setPopupCreateOpen(false)}
         onSubmit={handleCreate}
+      />
+
+      {/* Popup de edición */}
+      {selectedItem && (
+        <PopupEdit
+          isOpen={popupEditOpen}
+          tipo="costoextra"
+          itemData={{
+            id: selectedItem.idCostoExtra,
+            nombre: selectedItem.nombre,
+            precioUnitario: selectedItem.precioUnitario,
+            stock: selectedItem.stock
+          }}
+          onClose={() => {
+            setPopupEditOpen(false);
+            setSelectedItem(null);
+          }}
+          onSubmit={handleUpdate}
+        />
+      )}
+
+      {/* Popup de confirmación de eliminación */}
+      <PopupConfirm
+        isOpen={popupConfirmOpen}
+        title="Eliminar Costo Extra"
+        message="¿Está seguro de que desea eliminar este costo extra?"
+        itemName={itemToDelete?.nombre}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
       />
 
         {/* Empty State */}

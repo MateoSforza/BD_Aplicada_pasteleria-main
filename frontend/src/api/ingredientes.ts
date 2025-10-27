@@ -1,5 +1,5 @@
 import api from './http';
-import { CreateIngredienteDTO, Ingrediente,  } from '../types/ingredientes';
+import { CreateIngredienteDTO, Ingrediente, UpdateIngredienteDTO } from '../types/ingredientes';
 
 export const getIngredientes = async (): Promise<Ingrediente[]> => {
   const response = await api.get('/api/Ingredientes');  
@@ -9,7 +9,8 @@ export const getIngredientes = async (): Promise<Ingrediente[]> => {
     idIngrediente: ingrediente.IdIngrediente || ingrediente.idIngrediente,
     nombre: ingrediente.Nombre || ingrediente.nombre,
     unidadCompra: ingrediente.UnidadCompra || ingrediente.unidadCompra,
-    precioUnitario: ingrediente.PrecioUnitario || ingrediente.precioUnitario
+    precioUnitario: ingrediente.PrecioUnitario || ingrediente.precioUnitario,
+    stock: ingrediente.Stock ?? ingrediente.stock
   }));
 };
 
@@ -20,7 +21,8 @@ export const getIngredientesByID = async (id: number): Promise<Ingrediente[]> =>
     idIngrediente: ingrediente.IdIngrediente || ingrediente.idIngrediente,
     nombre: ingrediente.Nombre || ingrediente.nombre,
     unidadCompra: ingrediente.UnidadCompra || ingrediente.unidadCompra,
-    precioUnitario: ingrediente.PrecioUnitario || ingrediente.precioUnitario
+    precioUnitario: ingrediente.PrecioUnitario || ingrediente.precioUnitario,
+    stock: ingrediente.Stock ?? ingrediente.stock
   }));
 };
 
@@ -36,3 +38,8 @@ export const eliminarIngrediente = async (id: number): Promise<void> => {
 }
 
 
+
+// Actualizar ingrediente (precio y/o stock)
+export const updateIngrediente = async (id: number, data: UpdateIngredienteDTO): Promise<void> => {
+  await api.put(`/api/Ingredientes/${id}`, data);
+}

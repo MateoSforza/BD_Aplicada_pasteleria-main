@@ -1,24 +1,45 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google'
 import { useAuth } from "../hooks/useAuth"
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const { login, loading, error } = useAuth()
+  const { loginTraditional, loginWithGoogle, loading, error } = useAuth()
   const navigate = useNavigate()
   const [isExiting, setIsExiting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const success = await login({ username, password })
+    const success = await loginTraditional(username, password)
     if (success) {
       setIsExiting(true)
       setTimeout(() => {
         navigate("/dashboard")
       }, 600)
     }
+  }
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    if (credentialResponse.credential) {
+      const success = await loginWithGoogle(credentialResponse.credential)
+      if (success) {
+        setIsExiting(true)
+        setTimeout(() => {
+          navigate("/dashboard")
+        }, 600)
+      }
+    }
+  }
+
+  const handleGoogleError = () => {
+    console.error('Google login failed')
+  }
+
+  const handleGoogleLoginClick = () => {
+    // Placeholder para futuras funcionalidades
   }
 
   return (
@@ -45,6 +66,33 @@ const Login: React.FC = () => {
               <h1 className="text-3xl font-bold text-primary-400 text-center">
                 Camilas'<span className="text-primary-600">Bakery</span>
               </h1>
+            </div>
+
+            {/* Botón de Google */}
+            <div className="flex justify-center mb-6">
+              <div onClick={handleGoogleLoginClick}>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  text="continue_with"
+                  shape="rectangular"
+                  size="large"
+                  width="100%"
+                  useOneTap={false}
+                  auto_select={false}
+                  type="standard"
+                />
+              </div>
+            </div>
+
+            {/* Divisor */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-primary-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-primary-50 text-primary-600">O continúa con</span>
+              </div>
             </div>
 
             {/* Formulario */}

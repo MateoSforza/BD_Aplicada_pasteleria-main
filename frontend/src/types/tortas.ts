@@ -24,13 +24,16 @@ export interface Medida {
   IdTorta: number;
   Tamano: string;
   Estado: string;
-  // Ingredientes: Ingrediente[];
-  // CostosExtra: CostoExtra[];
   CostoIngredientes: number;
   CostoExtras: number;
   CostoTotal: number;
   PrecioVenta: number;
   Ganancia: number;
+}
+
+export interface MedidaDetalle extends Medida {
+  Ingredientes: Ingrediente[];
+  CostosExtra: CostoExtra[];
 }
 
 export interface Torta {

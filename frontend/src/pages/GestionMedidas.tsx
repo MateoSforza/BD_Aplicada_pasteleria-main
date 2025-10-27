@@ -1,0 +1,298 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Plus, Edit2, Trash2, FileText } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { getTortas, createMedida, updateMedida, deleteMedida } from '@/api/tortas';
+import PopupConfirm from '@/components/general/PopupConfirm';
+import { Torta, Medida } from '@/types/tortas';
+
+const GestionMedidas: React.FC = () => {
+  const { tortaId } = useParams<{ tortaId: string }>();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [medidaSeleccionada, setMedidaSeleccionada] = useState<Medida | null>(null);
+
+  // Query para obtener la torta
+  const { data: tortas, isLoading } = useQuery<Torta[]>({
+    queryKey: ['tortas'],
+    queryFn: getTortas,
+  });
+
+  const torta = tortas?.find(t => t.IdTorta === parseInt(tortaId || '0'));
+
+  // Mutations
+  const createMutation = useMutation({
+    mutationFn: (tamano: string) => createMedida(parseInt(tortaId || '0'), tamano),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tortas'] });
+      toast.success('Medida creada exitosamente');
+      setShowCreateModal(false);
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Error al crear la medida');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, tamano }: { id: number; tamano: string }) => updateMedida(id, tamano),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tortas'] });
+      toast.success('Medida actualizada exitosamente');
+      setShowEditModal(false);
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Error al actualizar la medida');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => deleteMedida(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tortas'] });
+      toast.success('Medida eliminada exitosamente');
+      setShowDeleteModal(false);
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Error al eliminar la medida');
+    },
+  });
+
+  const handleCreate = (values: { tamano: string }) => {
+    createMutation.mutate(values.tamano);
+  };
+
+  const handleEdit = (values: { tamano: string }) => {
+    if (medidaSeleccionada) {
+      updateMutation.mutate({ id: medidaSeleccionada.IdMedida, tamano: values.tamano });
+    }
+  };
+
+  const handleDelete = () => {
+    if (medidaSeleccionada) {
+      deleteMutation.mutate(medidaSeleccionada.IdMedida);
+      setMedidaSeleccionada(null);
+    }
+  };
+
+  const handleModificarContenido = (medidaId: number) => {
+    navigate(`/tortas/${tortaId}/medidas/${medidaId}`);
+  };
+
+  if (isLoading) {
+    return <div className="text-center py-10">Cargando...</div>;
+  }
+
+  if (!torta) {
+    return <div className="text-center py-10">Torta no encontrada</div>;
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto py-10 px-6">
+      {/* Header con botón de volver */}
+      <div className="mb-8">
+        <button
+          onClick={() => navigate('/tortas')}
+          className="flex items-center gap-2 text-primary-600 hover:text-primary-700 mb-4"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Volver a Tortas
+        </button>
+        
+        <h1 className="text-3xl font-bold text-primary-900">
+          Gestión de Medidas - {torta.Nombre}
+        </h1>
+      </div>
+
+      {/* Botón de agregar medida */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-primary-100 rounded-xl p-4 mb-6"
+      >
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+        >
+          <Plus className="w-5 h-5" />
+          Nueva Medida
+        </button>
+      </motion.div>
+
+      {/* Lista de medidas */}
+      {torta.Medidas.length === 0 ? (
+        <div className="text-center py-10 text-primary-500">
+          No hay medidas disponibles para esta torta
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {torta.Medidas.map((medida) => (
+            <motion.div
+              key={medida.IdMedida}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl border-2 border-primary-200 p-5 hover:shadow-lg transition-all"
+            >
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-primary-900 mb-1">
+                  Medida: {medida.Tamano}
+                </h3>
+                <div className="border-t border-primary-100 pt-3 mt-3 space-y-1">
+                  <p className="text-sm text-primary-600">
+                    <span className="font-medium">Costo Total:</span> ${medida.CostoTotal.toFixed(2)}
+                  </p>
+                  <p className="text-sm text-primary-600">
+                    <span className="font-medium">Precio Venta:</span> ${medida.PrecioVenta.toFixed(2)}
+                  </p>
+                  <p className="text-sm text-green-600 font-medium">
+                    <span>Ganancia:</span> ${medida.Ganancia.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setMedidaSeleccionada(medida);
+                    setShowEditModal(true);
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-primary-200 text-primary-700 rounded hover:bg-primary-300 text-sm"
+                >
+                  <Edit2 className="w-4 h-4" />
+                  Editar
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setMedidaSeleccionada(medida);
+                    setShowDeleteModal(true);
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Eliminar
+                </button>
+                
+                <button
+                  onClick={() => handleModificarContenido(medida.IdMedida)}
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm"
+                >
+                  <FileText className="w-4 h-4" />
+                  Contenido
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Modal para crear medida */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCreateModal(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
+            <h3 className="text-xl font-bold text-primary-900 mb-4">Nueva Medida</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              handleCreate({ tamano: formData.get('tamano') as string });
+            }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-primary-700 mb-2">
+                  Tamaño de la Medida
+                </label>
+                <input
+                  name="tamano"
+                  type="text"
+                  required
+                  className="w-full px-4 py-2 border border-primary-300 rounded-lg"
+                  placeholder="Ej: Pequeña, Mediana, Grande"
+                />
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2 text-primary-700 hover:bg-primary-100 rounded-lg"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={createMutation.isPending}
+                  className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:bg-gray-300"
+                >
+                  {createMutation.isPending ? 'Creando...' : 'Crear'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {medidaSeleccionada && (
+        <>
+          {/* Modal para editar medida */}
+          {showEditModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowEditModal(false)} />
+              <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
+                <h3 className="text-xl font-bold text-primary-900 mb-4">Editar Medida</h3>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  handleEdit({ tamano: formData.get('tamano') as string });
+                }} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-primary-700 mb-2">
+                      Tamaño de la Medida
+                    </label>
+                    <input
+                      name="tamano"
+                      type="text"
+                      defaultValue={medidaSeleccionada.Tamano}
+                      required
+                      className="w-full px-4 py-2 border border-primary-300 rounded-lg"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowEditModal(false)}
+                      className="px-4 py-2 text-primary-700 hover:bg-primary-100 rounded-lg"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={updateMutation.isPending}
+                      className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:bg-gray-300"
+                    >
+                      {updateMutation.isPending ? 'Guardando...' : 'Guardar'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <PopupConfirm
+            isOpen={showDeleteModal}
+            onCancel={() => setShowDeleteModal(false)}
+            onConfirm={handleDelete}
+            title="Eliminar Medida"
+            message="¿Estás seguro de que deseas eliminar esta medida?"
+            itemName={medidaSeleccionada.Tamano}
+          />
+        </>
+      )}
+    </div>
+  );
+};
+
+export default GestionMedidas;

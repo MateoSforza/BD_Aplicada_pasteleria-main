@@ -1,5 +1,6 @@
 import React from "react";
-import { Eye } from "lucide-react";
+import { Eye, Edit } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const estados = ["Pendiente", "Falta decorar", "Completado", "Entregado", "Cancelado"];
 const metodos = ["Efectivo", "Brubank", "Uala", "Mercado Pago", "Definir"];
@@ -12,6 +13,8 @@ interface PedidosTableProps {
 }
 
 const PedidosTable: React.FC<PedidosTableProps> = ({ data, isLoading, onView, onUpdate }) => {
+  const navigate = useNavigate();
+  
   const handleUpdate = (pedidoActualizado: any) => {
     onUpdate(pedidoActualizado);
   };
@@ -56,7 +59,7 @@ const PedidosTable: React.FC<PedidosTableProps> = ({ data, isLoading, onView, on
                       _cambioFecha: true,
                     });
                   }}
-                  className="border rounded px-2 py-1 text-sm w-36"
+                  className="border rounded px-2 py-1 text-sm w-36 bg-primary-200"
                 />
               </td>
 
@@ -71,7 +74,7 @@ const PedidosTable: React.FC<PedidosTableProps> = ({ data, isLoading, onView, on
                       _soloEstado: true,
                     })
                   }
-                  className="border rounded px-2 py-1 text-sm"
+                  className="border rounded px-2 py-1 text-sm bg-primary-200"
                 >
                   {estados.map((estado) => (
                     <option key={estado} value={estado}>
@@ -92,7 +95,7 @@ const PedidosTable: React.FC<PedidosTableProps> = ({ data, isLoading, onView, on
                       _cambioMetodo: true,
                     })
                   }
-                  className="border rounded px-2 py-1 text-sm"
+                  className="border rounded px-2 py-1 text-sm bg-primary-200"
                 >
                   {metodos.map((m) => (
                     <option key={m} value={m}>
@@ -111,14 +114,26 @@ const PedidosTable: React.FC<PedidosTableProps> = ({ data, isLoading, onView, on
                 })}
               </td>
 
-              {/* Ver detalle */}
+              {/* Acciones */}
               <td className="px-6 py-2">
-                <button
-                  onClick={() => onView(pedido)}
-                  className="flex items-center gap-1 text-primary-600 hover:text-primary-800"
-                >
-                  <Eye size={16} /> Ver
-                </button>
+                <div className="flex items-center gap-8">
+                  <button
+                    onClick={() => onView(pedido)}
+                    className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
+                    title="Ver detalle"
+                  >
+                    <Eye size={16} /> 
+                  </button>
+
+                  
+                  <button
+                    onClick={() => navigate(`/pedidos/modificar/${pedido.idPedido}`)}
+                    className="flex items-center gap-1 text-green-600 hover:text-green-800 transition-colors"
+                    title="Modificar"
+                  >
+                    <Edit size={16} />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

@@ -5,7 +5,11 @@ import Tortas from '../pages/Tortas';
 import Ingredientes from '../pages/Ingredientes';
 import CostoExtra from '../pages/CostoExtra';
 import Reportes from '../pages/Reportes';
-import Pedidos from '../pages/Pedidos'; 
+import Pedidos from '../pages/Pedidos';
+import CrearPedido from '../pages/CrearPedido';
+import ModificarPedido from '../pages/ModificarPedido';
+import GestionMedidas from '../pages/GestionMedidas';
+import ModificarMedida from '../pages/ModificarMedida';
 import Login from '../pages/Login';
 import ProtectedRoute from '../components/ProtectedRoute';
 
@@ -28,7 +32,11 @@ export const router = createBrowserRouter([
       { path: 'ingredientes', element: <Ingredientes /> },
       { path: 'costos-extra', element: <CostoExtra /> },
       { path: 'reportes', element: <Reportes /> },
-      { path: 'Pedidos', element: <Pedidos />  }
+      { path: 'Pedidos', element: <Pedidos /> },
+      { path: 'pedidos/crear', element: <CrearPedido /> },
+      { path: 'pedidos/modificar/:id', element: <ModificarPedido /> },
+      { path: 'tortas/:tortaId/medidas', element: <GestionMedidas /> },
+      { path: 'tortas/:tortaId/medidas/:medidaId', element: <ModificarMedida /> }
     ]
   }
 ]);
